@@ -1,0 +1,20 @@
+{
+    "name": "fabien.sanchez/wart-stat",
+    "type": "project",
+    "require": {
+        "slim/slim": "^4.15",
+        "slim/http": "^1.4",
+        "php-di/slim-bridge": "^3.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "WartStat\\": "api/wart-stat/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Fabien Sanchez",
+            "email": "fabien.sanchez@citopia.fr"
+        }
+    ]
+}
