@@ -148,9 +148,61 @@ app/
 ├── pages/           # Pages pour chaque route
 │   ├── Home.tsx     # Page d'accueil
 │   └── NotFound.tsx # Page 404
+├── components/      # Composants réutilisables
+│   └── layouts/     # Layouts du projet
+├── hooks/           # Hooks custom (hors hooks de store)
+├── stores/          # Stores zustand et hooks associés
 ├── App.css
 ├── index.css
 └── assets/          # Ressources statiques
+```
+
+#### Dossier components
+
+Ce dossier contient les composants qui constituent les pages.
+Le sous-dossier `components/layouts` regroupe les différents layouts du projet.
+
+#### Dossier hooks
+
+Ce dossier contient tous les hooks custom. Exception : les hooks associés à un store restent dans le dossier stores.
+
+#### Dossier stores
+
+Ce dossier contient tous les stores et hooks associés pour la gestion d'état globale de l'application frontend.
+Librairie utilisée : [zustand](https://github.com/pmndrs/zustand).
+Convention : un store par domaine ou ressource principale, hooks personnalisés pour accéder aux stores.
+
+Exemple de store :
+
+```ts
+// app/stores/userStore.ts
+import { create } from 'zustand';
+
+type User = {
+  id: number;
+  name: string;
+};
+
+interface UserState {
+  users: User[];
+  addUser: (user: User) => void;
+}
+
+export const useUserStore = create<UserState>((set) => ({
+  users: [],
+  addUser: (user) => set((state) => ({ users: [...state.users, user] })),
+}));
+```
+
+Utilisation dans un composant :
+
+```tsx
+import { useUserStore } from './stores/userStore';
+
+function UserList() {
+  const users = useUserStore((state) => state.users);
+  return <ul>{users.map(u => <li key={u.id}>{u.name}</li>)}</ul>;
+}
 ```
 
 ---
@@ -158,6 +210,26 @@ app/
 ## Guide pour un agent IA
 
 ### Conventions de code à respecter
+
+#### Frontend React
+
+1. **Organisation des fichiers** :
+   - Un composant par fichier dans `app/components/`
+   - Les layouts dans `app/components/layouts/`
+   - Les pages dans `app/pages/`
+   - Les hooks custom dans `app/hooks/` (hors hooks de store)
+   - Les stores et hooks associés dans `app/stores/`
+2. **Nommage** :
+   - Composants : PascalCase (ex : `UserCard.tsx`)
+   - Hooks : préfixe `use` (ex : `useUserStore.ts`)
+   - Stores : suffixe `Store` (ex : `userStore.ts`)
+3. **Convention zustand** :
+   - Un store par domaine ou ressource principale
+   - Les hooks d'accès au store sont exportés depuis le même fichier
+4. **Routage** :
+   - Les routes sont définies dans `app/routes.tsx` et utilisent React Router DOM
+5. **Styles** :
+   - Fichiers CSS par composant ou global (`App.css`, `index.css`)
 
 #### Backend PHP
 
@@ -317,15 +389,17 @@ return function () {
 ### Commandes utiles
 
 ```bash
+# Frontend React
+npm install                         # Installer les dépendances
+npm install zustand                 # Installer zustand
+npm run dev                         # Lancer le serveur de développement
+npm run build                       # Build de production
+npm run lint                        # Linting ESLint
+npm run preview                     # Prévisualisation du build
+
 # Backend PHP
 composer install                    # Installer les dépendances
 composer dump-autoload              # Régénérer l'autoloader
-
-# Frontend
-npm install                         # Installer les dépendances
-npm run dev                         # Lancer le dev server
-
-# Serveur PHP local
 php -S localhost:8080 -t public     # Démarrer le serveur PHP
 ```
 
