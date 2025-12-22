@@ -40,16 +40,6 @@ export default function ReportForm() {
     e.preventDefault();
     setValidationError(null);
 
-    // Validation du contenu (2000-3000 caractères)
-    if (formData.content.length < 2000) {
-      setValidationError(`Le rapport doit contenir au moins 2000 caractères (actuellement: ${formData.content.length})`);
-      return;
-    }
-    if (formData.content.length > 3000) {
-      setValidationError(`Le rapport ne doit pas dépasser 3000 caractères (actuellement: ${formData.content.length})`);
-      return;
-    }
-
     try {
       await addReport(formData);
       navigate('/');
@@ -59,23 +49,22 @@ export default function ReportForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ maxWidth: '600px', margin: '0 auto' }}>
+    <form onSubmit={handleSubmit} className="report-form">
       <h1>Nouveau Rapport</h1>
 
       {(error || validationError) && (
-        <div style={{ color: 'red', marginBottom: '1rem' }}>
+        <div className="error-message">
           {validationError || error}
         </div>
       )}
 
-      <div style={{ marginBottom: '1rem' }}>
-        <label htmlFor="country">Pays :</label>
+      <div className="form-group">
+        <label htmlFor="country">Pays</label>
         <select
           id="country"
           value={formData.country}
           onChange={(e) => setFormData({ ...formData, country: e.target.value as Country })}
           required
-          style={{ display: 'block', width: '100%', padding: '0.5rem', marginTop: '0.25rem' }}
         >
           {COUNTRIES.map((c) => (
             <option key={c.value} value={c.value}>
@@ -85,33 +74,31 @@ export default function ReportForm() {
         </select>
       </div>
 
-      <div style={{ marginBottom: '1rem' }}>
-        <label htmlFor="date">Date :</label>
+      <div className="form-group">
+        <label htmlFor="date">Date</label>
         <input
           type="date"
           id="date"
           value={formData.date}
           onChange={(e) => setFormData({ ...formData, date: e.target.value })}
           required
-          style={{ display: 'block', width: '100%', padding: '0.5rem', marginTop: '0.25rem' }}
         />
       </div>
 
-      <div style={{ marginBottom: '1rem' }}>
-        <label htmlFor="time">Heure :</label>
+      <div className="form-group">
+        <label htmlFor="time">Heure</label>
         <input
           type="time"
           id="time"
           value={formData.time}
           onChange={(e) => setFormData({ ...formData, time: e.target.value })}
           required
-          style={{ display: 'block', width: '100%', padding: '0.5rem', marginTop: '0.25rem' }}
         />
       </div>
 
-      <div style={{ marginBottom: '1rem' }}>
+      <div className="form-group">
         <label htmlFor="content">
-          Rapport ({formData.content.length}/3000 caractères, min. 2000) :
+          Contenu du rapport
         </label>
         <textarea
           id="content"
@@ -119,28 +106,24 @@ export default function ReportForm() {
           onChange={(e) => setFormData({ ...formData, content: e.target.value })}
           required
           rows={15}
-          style={{
-            display: 'block',
-            width: '100%',
-            padding: '0.5rem',
-            marginTop: '0.25rem',
-            resize: 'vertical',
-          }}
+          placeholder="Saisissez le contenu de votre rapport ici..."
         />
+        <div className="char-counter valid">
+          {formData.content.length} caractères
+        </div>
       </div>
 
-      <div style={{ display: 'flex', gap: '1rem' }}>
+      <div className="button-group">
         <button
           type="button"
           onClick={() => navigate('/')}
-          style={{ padding: '0.5rem 1rem' }}
         >
           Annuler
         </button>
         <button
           type="submit"
           disabled={isLoading}
-          style={{ padding: '0.5rem 1rem' }}
+          className="primary"
         >
           {isLoading ? 'Enregistrement...' : 'Enregistrer'}
         </button>
