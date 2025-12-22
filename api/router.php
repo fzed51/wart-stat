@@ -1,6 +1,7 @@
 <?php
 
 use Slim\App;
+use Slim\Routing\RouteCollectorProxy as Group;
 use WartStat\Report\ReportController;
 
 return function (App $app) {  
@@ -14,10 +15,10 @@ return function (App $app) {
     // $app->get('/hello', [YourController::class, 'yourMethod']);
     
     // Reports
-    $app->group('/reports', function (App $app) {
+    $app->group('/reports', function (Group $group) {
         //$app->get('', [ReportController::class, 'list']);
         //$app->get('/{id}', [ReportController::class, 'getById']);
-        $app->post('', [ReportController::class, 'create']);
+        $group->post('', [ReportController::class, 'create']);
         //$app->put('/{id}', [ReportController::class, 'update']);
         //$app->delete('/{id}', [ReportController::class, 'delete']);
     });
