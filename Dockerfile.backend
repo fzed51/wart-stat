@@ -1,0 +1,44 @@
+# Build stage
+FROM composer:2 AS composer
+
+WORKDIR /app
+
+COPY composer.json composer.lock* ./
+
+RUN composer install --no-dev --optimize-autoloader
+
+# Production stage
+FROM php:8.3-fpm-alpine
+
+WORKDIR /app
+
+# Install additional PHP extensions if needed
+RUN docker-php-ext-install -j$(nproc) \
+    opcache
+
+# Copy Composer dependencies
+COPY --from=composer /app/vendor ./vendor
+
+# Copy application code
+COPY api ./api
+COPY report ./report
+
+# Create report directory if it doesn't exist and set permissions
+RUN mkdir -p /app/report && \
+    chmod -R 755 /app/report && \
+    chown -R www-data:www-data /app
+
+# Configure PHP opcache
+RUN echo "opcache.enable=1" >> /usr/local/etc/php/conf.d/opcache.ini && \
+    echo "opcache.enable_cli=1" >> /usr/local/etc/php/conf.d/opcache.ini && \
+    echo "opcache.memory_consumption=128" >> /usr/local/etc/php/conf.d/opcache.ini
+
+# Expose port
+EXPOSE 9000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:9000 || exit 1
+
+# Start PHP-FPM
+CMD ["php-fpm"]
