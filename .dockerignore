@@ -6,7 +6,6 @@ yarn-error.log
 .env.local
 .git
 .gitignore
-dist
 build
 coverage
 .DS_Store
@@ -15,4 +14,3 @@ coverage
 *.log
 report/*.txt
 vendor
-composer.lock

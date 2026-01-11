@@ -1,44 +1,27 @@
-# Build stage
-FROM composer:2 AS composer
+FROM php:8.2-cli
 
 WORKDIR /app
 
-COPY composer.json composer.lock* ./
+# Installer les dépendances requises
+RUN apt-get update && apt-get install -y \
+    git \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN composer install --no-dev --optimize-autoloader
+# Installer Composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Production stage
-FROM php:8.3-fpm-alpine
-
-WORKDIR /app
-
-# Install additional PHP extensions if needed
-RUN docker-php-ext-install -j$(nproc) \
-    opcache
-
-# Copy Composer dependencies
-COPY --from=composer /app/vendor ./vendor
-
-# Copy application code
+# Copier les fichiers du projet
 COPY api ./api
-COPY report ./report
+COPY composer.json composer.lock ./
 
-# Create report directory if it doesn't exist and set permissions
-RUN mkdir -p /app/report && \
-    chmod -R 755 /app/report && \
-    chown -R www-data:www-data /app
+# Installer les dépendances PHP avec Composer
+RUN composer install --no-interaction --prefer-dist
 
-# Configure PHP opcache
-RUN echo "opcache.enable=1" >> /usr/local/etc/php/conf.d/opcache.ini && \
-    echo "opcache.enable_cli=1" >> /usr/local/etc/php/conf.d/opcache.ini && \
-    echo "opcache.memory_consumption=128" >> /usr/local/etc/php/conf.d/opcache.ini
+# Copier les fichiers du frontend (dist)
+COPY dist ./dist
 
-# Expose port
-EXPOSE 9000
+EXPOSE 80
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://localhost:9000 || exit 1
-
-# Start PHP-FPM
-CMD ["php-fpm"]
+# Lancer le serveur PHP intégré pointant vers le dossier dist
+CMD ["php", "-S", "0.0.0.0:80", "-t", "dist"]
