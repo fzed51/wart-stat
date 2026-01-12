@@ -18,6 +18,8 @@ class ReportController extends Controller
 
     public function create(Request $request, Response $response): Response
     {
+        var_dump("~create~");
+
         $data = $this->parseRequestBody($request);
 
         // Validation
