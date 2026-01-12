@@ -5,8 +5,9 @@ namespace WartStat\Report;
 use DateTime;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use \WartStat\Base\Controller;
 
-class ReportController
+class ReportController extends Controller
 {
 
     public function __construct(
@@ -15,23 +16,9 @@ class ReportController
     ) {
     }
 
-    protected function makeJsonResponse(Response $response, int $code, $data): Response
-    {
-        $body = "";
-        try {
-            $body = json_encode($data);
-        } catch (\Throwable $th) {
-            throw $th;
-        }
-        $response->getBody()->write($body);
-        return $response
-            ->withHeader('Content-Type', 'application/json')
-            ->withStatus($code);
-    }
-
     public function create(Request $request, Response $response): Response
     {
-        $data = $request->getParsedBody();
+        $data = $this->parseRequestBody($request);
 
         // Validation
         if (!$this->validator->safeValidate($data)) {
