@@ -1,20 +1,24 @@
 {
-    "name": "fabien.sanchez/wart-stat",
-    "type": "project",
-    "require": {
-        "slim/slim": "^4.15",
-        "php-di/slim-bridge": "^3.4",
-        "slim/psr7": "^1.8"
-    },
-    "autoload": {
-        "psr-4": {
-            "WartStat\\": "api/wart-stat/"
-        }
-    },
-    "authors": [
-        {
-            "name": "Fabien Sanchez",
-            "email": "fabien.sanchez@citopia.fr"
-        }
-    ]
+  "name": "fabien.sanchez/wart-stat",
+  "authors": [
+    {
+      "name": "Fabien Sanchez"
+    }
+  ],
+  "type": "project",
+  "autoload": {
+    "psr-4": {
+      "WartStat\\": "api/wart-stat/"
+    }
+  },
+  "require": {
+    "ext-pdo": "*",
+    "slim/slim": "^4.15",
+    "php-di/slim-bridge": "^3.4",
+    "slim/psr7": "^1.8",
+    "monolog/monolog": "^3.10"
+  },
+  "require-dev": {
+    "roave/security-advisories": "dev-latest"
+  }
 }
