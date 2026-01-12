@@ -2,6 +2,8 @@
 
 namespace WartStat\Report;
 
+use Monolog\Logger;
+
 class ReportValidator
 {
     private array $validCountries =  ['US', 'GER', 'URRS', 'UK', 'JAP', 'CH', 'IT', 'FR', 'SU', 'IS'];
@@ -35,8 +37,7 @@ class ReportValidator
         if (empty($data['content'])) {
             $this->errors['content'] = 'Le rapport est requis';
         }
-
-        return !empty($this->errors);
+        return count(array_keys($this->errors)) === 0;
     }
 
     public function getErrors(): array

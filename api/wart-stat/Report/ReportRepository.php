@@ -2,13 +2,12 @@
 
 namespace WartStat\Report;
 
+use Monolog\Logger;
 use PDO;
 
 class ReportRepository
 {
-    private PDO $pdo;
-
-    public function __construct(PDO $pdo)
+    public function __construct(private PDO $pdo, private Logger $logger)
     {
         $this->pdo = $pdo;
         $this->ensureTableExists();
@@ -41,7 +40,7 @@ class ReportRepository
         ]);
 
         $id = (int) $this->pdo->lastInsertId();
-
+        $this->logger->debug("Report created with ID: $id");
         return $this->findById($id);
     }
 

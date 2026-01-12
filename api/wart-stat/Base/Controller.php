@@ -24,7 +24,6 @@ class Controller {
     {
         $data = $request->getBody()->getContents();
         $contentType = $request->getHeaderLine('Content-Type');
-        var_dump($contentType,$data );
         if (str_contains($contentType, 'application/json')) {
             return json_decode($data, true);
         } elseif (str_contains($contentType, 'application/x-www-form-urlencoded')) {

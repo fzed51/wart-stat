@@ -2,7 +2,7 @@
 
 namespace WartStat\Report;
 
-use DateTime;
+use Monolog\Logger;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use \WartStat\Base\Controller;
@@ -12,13 +12,14 @@ class ReportController extends Controller
 
     public function __construct(
         private ReportRepository $repository,
-        private ReportValidator $validator
+        private ReportValidator $validator,
+        private Logger $logger
     ) {
     }
 
     public function create(Request $request, Response $response): Response
     {
-        var_dump("~create~");
+        $this->logger->info('~create~');
 
         $data = $this->parseRequestBody($request);
 
