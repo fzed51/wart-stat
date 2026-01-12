@@ -1,9 +1,30 @@
 <?php
 
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
+use Monolog\Level;
+
 return function () {
     $containerBuilder = new \DI\ContainerBuilder();
 
     $containerBuilder->addDefinitions([
+        // Monolog Logger
+        Logger::class => function () {
+            $logger = new Logger('wart-stat');
+            
+            // Create logs directory if it doesn't exist
+            $logsDir = __DIR__ . '/../data/logs';
+            if (!is_dir($logsDir)) {
+                if (!mkdir($logsDir, 0755, true) && !is_dir($logsDir)) {
+                    throw new \RuntimeException(sprintf('Directory "%s" was not created', $logsDir));
+                }
+            }
+            
+            $logger->pushHandler(new StreamHandler($logsDir . '/app.log', Level::Debug));
+            
+            return $logger;
+        },
+
         // PDO SQLite connection
         \PDO::class => function () {
             $dbPath = __DIR__ . '/../data/database.sqlite';
