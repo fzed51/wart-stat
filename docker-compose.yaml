@@ -9,6 +9,7 @@ services:
       - ./app:/app/app:rw
       - ./public:/app/public:rw
       - wart-stat-dist:/app/dist:rw
+      - /app/node_modules
     networks:
       - wart-stat-network
     restart: unless-stopped
