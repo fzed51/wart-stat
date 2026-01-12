@@ -8,7 +8,7 @@ services:
     volumes:
       - ./app:/app/app:rw
       - ./public:/app/public:rw
-      - ./dist:/app/dist:rw
+      - wart-stat-dist:/app/dist:rw
     networks:
       - wart-stat-network
     restart: unless-stopped
@@ -28,10 +28,15 @@ services:
     restart: unless-stopped
     volumes:
       - ./api:/app/api:rw
-      - ./dist:/app/dist:rw
+      - ./data:/app/data:rw
+      - wart-stat-dist:/app/dist:rw
     labels:
       - "com.example.description=Wart-Stat Backend API"
 
 networks:
   wart-stat-network:
     driver: bridge
+
+volumes:
+  wart-stat-dist: 
+    driver: local
