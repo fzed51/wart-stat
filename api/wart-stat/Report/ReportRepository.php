@@ -21,7 +21,7 @@ class ReportRepository
                 country TEXT NOT NULL,
                 datetime TEXT NOT NULL,
                 content TEXT NOT NULL,
-                created_at TEXT NOT NULL
+                created_at TEXT default (replace(CURRENT_TIMESTAMP, ' ', 'T') || 'Z')
             )
         ');
     }
@@ -29,15 +29,14 @@ class ReportRepository
     public function create(array $data): array
     {
         $stmt = $this->pdo->prepare('
-            INSERT INTO reports (country, datetime, content, created_at)
-            VALUES (:country, :datetime, :content, :created_at)
+            INSERT INTO reports (country, datetime, content)
+            VALUES (:country, :datetime, :content)
         ');
 
         $stmt->execute([
             'country' => $data['country'],
             'datetime' => $data['datetime'],
             'content' => $data['content'],
-            'created_at' => (new \DateTime())->format('Y-m-d\TH:i:s\Z'),
         ]);
 
         $id = (int) $this->pdo->lastInsertId();
