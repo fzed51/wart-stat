@@ -2,16 +2,16 @@ import type { Country } from '../../stores/reportStore';
 import './CountrySelect.css';
 
 // Import des drapeaux
-import unitedStatesFlag from '../assets/united-states.svg';
-import germanyFlag from '../assets/germany.svg';
-import russiaFlag from '../assets/russia.svg';
-import unitedKingdomFlag from '../assets/united-kingdom.svg';
-import japanFlag from '../assets/japan.svg';
-import chinaFlag from '../assets/china.svg';
-import italiaFlag from '../assets/italia.svg';
-import franceFlag from '../assets/france.svg';
-import swedenFlag from '../assets/sweden.svg';
-import israelFlag from '../assets/israel.svg';
+import unitedStatesFlag from '../../assets/united-states.svg';
+import germanyFlag from '../../assets/germany.svg';
+import russiaFlag from '../../assets/russia.svg';
+import unitedKingdomFlag from '../../assets/united-kingdom.svg';
+import japanFlag from '../../assets/japan.svg';
+import chinaFlag from '../../assets/china.svg';
+import italiaFlag from '../../assets/italia.svg';
+import franceFlag from '../../assets/france.svg';
+import swedenFlag from '../../assets/sweden.svg';
+import israelFlag from '../../assets/israel.svg';
 
 const COUNTRIES: { value: Country; label: string; flag: string }[] = [
   { value: 'US', label: 'États-Unis', flag: unitedStatesFlag },
