@@ -1,19 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useReportStore, type Country, type ReportFormData } from '../stores/reportStore';
-
-const COUNTRIES: { value: Country; label: string }[] = [
-  { value: 'US', label: 'États-Unis' },
-  { value: 'GER', label: 'Allemagne' },
-  { value: 'URRS', label: 'URSS' },
-  { value: 'UK', label: 'Royaume-Uni' },
-  { value: 'JAP', label: 'Japon' },
-  { value: 'CH', label: 'Chine' },
-  { value: 'IT', label: 'Italie' },
-  { value: 'FR', label: 'France' },
-  { value: 'SU', label: 'Suède' },
-  { value: 'IS', label: 'Israël' },
-];
+import { useReportStore, type ReportFormData } from '../stores/reportStore';
+import { CountrySelect } from './ContrySelect';
 
 const getDefaultDate = (): string => {
   return new Date().toISOString().split('T')[0];
@@ -58,21 +46,10 @@ export default function ReportForm() {
         </div>
       )}
 
-      <div className="form-group">
-        <label htmlFor="country">Pays</label>
-        <select
-          id="country"
-          value={formData.country}
-          onChange={(e) => setFormData({ ...formData, country: e.target.value as Country })}
-          required
-        >
-          {COUNTRIES.map((c) => (
-            <option key={c.value} value={c.value}>
-              {c.label}
-            </option>
-          ))}
-        </select>
-      </div>
+      <CountrySelect
+        value={formData.country}
+        onChange={(country) => setFormData({ ...formData, country })}
+      />
 
       <div className="form-group">
         <label htmlFor="date">Date</label>
