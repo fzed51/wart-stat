@@ -13,15 +13,15 @@ return function () {
             $logger = new Logger('wart-stat');
             
             // Create logs directory if it doesn't exist
-            $logsDir = __DIR__ . '/../data/logs';
+            $logsDir = __DIR__ . '/../logs';
             if (!is_dir($logsDir)) {
                 if (!mkdir($logsDir, 0755, true) && !is_dir($logsDir)) {
                     throw new \RuntimeException(sprintf('Directory "%s" was not created', $logsDir));
                 }
             }
-            
-            $logger->pushHandler(new StreamHandler($logsDir . '/app.log', Level::Debug));
-            
+            $handler = new StreamHandler($logsDir . '/app.log', Level::Debug);
+            $handler->setFormatter(new \Monolog\Formatter\JsonFormatter());
+            $logger->pushHandler($handler);
             return $logger;
         },
 

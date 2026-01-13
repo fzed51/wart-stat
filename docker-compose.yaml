@@ -30,6 +30,7 @@ services:
     volumes:
       - ./api:/app/api:rw
       - ./data:/app/data:rw
+      - ./data:/app/logs:rw
       - wart-stat-dist:/app/dist:rw
     labels:
       - "com.example.description=Wart-Stat Backend API"
@@ -39,5 +40,5 @@ networks:
     driver: bridge
 
 volumes:
-  wart-stat-dist: 
+  wart-stat-dist:
     driver: local
