@@ -159,6 +159,143 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
+   REPORTS TABLE
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.table-container {
+  overflow-x: auto;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-card);
+}
+
+.reports-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.reports-table thead {
+  background: var(--color-bg-secondary);
+  border-bottom: 2px solid var(--color-border);
+}
+
+.reports-table th {
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  color: var(--color-text-secondary);
+  border-right: 1px solid var(--color-border);
+}
+
+.reports-table th:last-child {
+  border-right: none;
+}
+
+.reports-table tbody tr {
+  border-bottom: 1px solid var(--color-border);
+  transition: background-color 0.2s;
+}
+
+.reports-table tbody tr:hover {
+  background: var(--color-bg-secondary);
+}
+
+.reports-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.reports-table td {
+  padding: 1rem;
+  border-right: 1px solid var(--color-border);
+  vertical-align: top;
+}
+
+.reports-table td:last-child {
+  border-right: none;
+}
+
+.table-id {
+  font-family: 'Fira Code', monospace;
+  color: var(--color-text-muted);
+  width: 60px;
+  font-size: 0.85rem;
+}
+
+.table-id::before {
+  content: '#';
+  opacity: 0.5;
+}
+
+.table-country {
+  min-width: 120px;
+  font-weight: 500;
+}
+
+.table-date {
+  min-width: 100px;
+  font-family: 'Fira Code', monospace;
+  font-size: 0.85rem;
+}
+
+.table-time {
+  min-width: 80px;
+  font-family: 'Fira Code', monospace;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.table-content {
+  min-width: 300px;
+  max-width: 500px;
+}
+
+.content-preview {
+  max-height: 100px;
+  overflow-y: auto;
+  line-height: 1.5;
+  word-wrap: break-word;
+}
+
+.content-preview::-webkit-scrollbar {
+  width: 8px;
+}
+
+.content-preview::-webkit-scrollbar-track {
+  background: var(--color-bg-input);
+}
+
+.content-preview::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 4px;
+}
+
+.content-preview::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-muted);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: var(--color-text-muted);
+}
+
+.empty-state p {
+  margin-bottom: 2rem;
+  font-size: 1.1rem;
+}
+
+.empty-state::before {
+  content: '[ ]';
+  display: block;
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  opacity: 0.3;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
    LOADING STATE
    ═══════════════════════════════════════════════════════════════════════════ */
 

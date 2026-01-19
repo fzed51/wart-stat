@@ -20,6 +20,7 @@ interface ReportState {
   reports: Report[];
   isLoading: boolean;
   error: string | null;
+  fetchReports: () => Promise<void>;
   addReport: (formData: ReportFormData) => Promise<void>;
 }
 
@@ -31,6 +32,26 @@ export const useReportStore = create<ReportState>((set) => ({
   reports: [],
   isLoading: false,
   error: null,
+
+  fetchReports: async () => {
+    set({ isLoading: true, error: null });
+
+    try {
+      const response = await fetch('/api/reports');
+
+      if (!response.ok) {
+        throw new Error('Erreur lors de la récupération des rapports');
+      }
+
+      const reports = await response.json();
+      set({ reports, isLoading: false });
+    } catch (error) {
+      set({
+        error: error instanceof Error ? error.message : 'Une erreur est survenue',
+        isLoading: false,
+      });
+    }
+  },
 
   addReport: async (formData: ReportFormData) => {
     set({ isLoading: true, error: null });

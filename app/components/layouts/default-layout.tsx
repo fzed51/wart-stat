@@ -6,6 +6,7 @@ export function DefaultLayout({children}: PropsWithChildren) {
     <>
       <nav className="main-nav">
         <Link to="/">Accueil</Link>
+        <Link to="/reports">Rapports</Link>
       </nav>
       <main className="page">
         <Suspense fallback={<div className="loading">Chargement</div>}>
