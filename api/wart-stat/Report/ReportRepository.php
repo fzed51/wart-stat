@@ -15,7 +15,7 @@ class ReportRepository
 
     private function ensureTableExists(): void
     {
-        $this->pdo->exec('
+        $this->pdo->exec("
             CREATE TABLE IF NOT EXISTS reports (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 country TEXT NOT NULL,
@@ -23,7 +23,7 @@ class ReportRepository
                 content TEXT NOT NULL,
                 created_at TEXT default (replace(CURRENT_TIMESTAMP, ' ', 'T') || 'Z')
             )
-        ');
+        ");
     }
 
     public function create(array $data): array

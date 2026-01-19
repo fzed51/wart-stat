@@ -5,7 +5,7 @@ namespace WartStat\Report;
 use Monolog\Logger;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use \WartStat\Base\Controller;
+use WartStat\Base\Controller;
 
 class ReportController extends Controller
 {
@@ -36,5 +36,14 @@ class ReportController extends Controller
         ]);
 
         return $this->makeJsonResponse($response, 201, $report);
+    }
+
+    public function list(Response $response): Response
+    {
+        $this->logger->info('~list~');
+
+        $reports = $this->repository->findAll();
+
+        return $this->makeJsonResponse($response, 200, $reports);
     }
 }
