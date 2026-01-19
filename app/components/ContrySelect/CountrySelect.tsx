@@ -32,10 +32,19 @@ interface CountrySelectProps {
 }
 
 export function CountrySelect({ value, onChange }: CountrySelectProps) {
+  const selectedCountry = COUNTRIES.find(c => c.value === value);
+
   return (
     <div className="form-group">
       <label htmlFor="country">Pays</label>
-      <div className="select-wrapper" style={{ '--flag-url': `url(${COUNTRIES.find(c => c.value === value)?.flag})` } as React.CSSProperties}>
+      <div className="select-wrapper">
+        {selectedCountry && (
+          <img
+            src={selectedCountry.flag}
+            alt={selectedCountry.label}
+            className="select-flag-icon"
+          />
+        )}
         <select
           id="country"
           className="select-with-flag"
@@ -44,7 +53,7 @@ export function CountrySelect({ value, onChange }: CountrySelectProps) {
           required
         >
           {COUNTRIES.map((c) => (
-            <option key={c.value} value={c.value} data-flag={c.flag}>
+            <option key={c.value} value={c.value}>
               {c.label}
             </option>
           ))}

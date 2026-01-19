@@ -8,21 +8,30 @@
   width: 100%;
 }
 
+.select-flag-icon {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 16px;
+  pointer-events: none;
+  z-index: 1;
+}
+
 .select-with-flag {
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
+  width: 100%;
   padding: 0.75rem 2.5rem 0.75rem 3rem;
   background-image: 
-    var(--flag-url),
     linear-gradient(45deg, transparent 50%, var(--color-green-primary) 50%),
     linear-gradient(135deg, var(--color-green-primary) 50%, transparent 50%);
   background-position: 
-    0.75rem center,
     calc(100% - 1.25rem) center,
     calc(100% - 0.75rem) center;
   background-size: 
-    24px 16px,
     0.4rem 0.4rem,
     0.4rem 0.4rem;
   background-repeat: no-repeat;
@@ -38,7 +47,6 @@
 }
 
 .select-with-flag option {
-  padding-left: 2rem;
   background-color: var(--color-bg-primary);
   color: var(--color-text-primary);
 }
