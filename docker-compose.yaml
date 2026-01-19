@@ -34,6 +34,8 @@ services:
       - wart-stat-dist:/app/dist:rw
     labels:
       - "com.example.description=Wart-Stat Backend API"
+    depends_on:
+      - frontend
 
 networks:
   wart-stat-network:
