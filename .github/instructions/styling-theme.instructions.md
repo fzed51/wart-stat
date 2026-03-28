@@ -1,7 +1,7 @@
 ---
 name: styling-theme-instructions
 description: "Use when: styling components, working with CSS, creating new pages, or maintaining visual consistency with the hacker/matrix theme"
-applyTo: ["app/**/*.css", "app/**/*.tsx", "app/App.css", "app/index.css"]
+applyTo: "app/**/*.{css,tsx}"
 ---
 
 # Design System & Styling: Hacker Theme
