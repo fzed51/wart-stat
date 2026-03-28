@@ -49,6 +49,10 @@ Frontend (React + TypeScript + Vite)     Backend (PHP + Slim Framework)
 
 Le frontend communique avec le backend via des appels HTTP. Les endpoints doivent être structurés de manière RESTful via les routes définies dans `./api/router.php`.
 
+### Design & Styling
+
+L'application utilise un **thème hacker rétro** avec palette vert néon sur fond noir. Voir [.github/instructions/styling-theme.instructions.md](.github/instructions/styling-theme.instructions.md) pour les conventions de styling détaillées.
+
 ## Démarrage du développement
 
 ### Frontend
@@ -76,5 +80,8 @@ L'application utilise Docker Compose :
 
 ## Besoin d'aide?
 
-- Consulte la documentation spécifique dans `.github/instructions/` pour le backend (`api.instructions.md`) ou le frontend (`app.instructions.md`)
+- Consulte la documentation spécifique dans `.github/instructions/`:
+  - **Backend**: `api.instructions.md` (PHP/Slim, logique métier, endpoints)
+  - **Frontend**: `app.instructions.md` (React/TypeScript, composants, état)
+  - **Styling**: `styling-theme.instructions.md` (design system, couleurs, effets)
 - Vérifie `AI_CONTEXT.md` pour le contexte technique supplémentaire

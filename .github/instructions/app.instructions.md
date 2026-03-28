@@ -168,6 +168,38 @@ async function fetchReport(id: number): Promise<Report> {
 - Utilise un composant d'erreur centralisé si possible
 - Journalise les erreurs pour le débogage
 
+## Styling & Design System
+
+L'application utilise un **thème hacker rétro** (Matrix/terminal).
+
+> **📖 Voir**: [styling-theme.instructions.md](.github/instructions/styling-theme.instructions.md) pour la documentation complète sur le design system
+
+### Principes clés
+- **Palette**: Vert néon (#00ff00) sur fond noir (#0a0a0a)
+- **Typographie**: Monospace uniquement (Fira Code, etc.)
+- **Effets**: Glow sur titres, scanlines, bordures ASCII
+- **Variables CSS**: Toujours utiliser les variables de couleur
+
+### Couleurs principales
+```css
+--color-text-primary: #00ff00;      /* Vert néon */
+--color-text-secondary: #00cc00;    /* Vert clair */
+--color-text-muted: #008800;        /* Vert dim */
+--color-bg-primary: #0a0a0a;        /* Noir */
+--color-bg-card: rgba(0, 30, 0, 0.6); /* Vert transparent */
+```
+
+### Exemple de composant stylisé
+```tsx
+// ✅ Utilise les variables CSS
+<div className="my-card" style={{ color: 'var(--color-text-primary)' }}>
+  Contenu vert néon
+</div>
+
+// ❌ Ne pas hardcoder les couleurs
+<div style={{ color: '#00ff00' }}>...</div>
+```
+
 ## Développement
 
 ### Démarrage
