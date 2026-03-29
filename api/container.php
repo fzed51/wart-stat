@@ -3,6 +3,8 @@
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Monolog\Level;
+use WartStat\Database\Database;
+use Psr\Log\LoggerInterface;
 
 return function () {
     $containerBuilder = new \DI\ContainerBuilder();
@@ -24,6 +26,9 @@ return function () {
             $logger->pushHandler($handler);
             return $logger;
         },
+        LoggerInterface::class => function ($container) {
+            return $container->get(Logger::class);
+        },
 
         // PDO SQLite connection
         \PDO::class => function () {
@@ -40,6 +45,11 @@ return function () {
             $pdo->setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_ASSOC);
 
             return $pdo;
+        },
+
+        Database::class => function ($container) {
+            $dbPath = __DIR__ . '/../data/database.sqlite';
+            return new Database($dbPath, $container->get(LoggerInterface::class));
         },
     ]);
 
