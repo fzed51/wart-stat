@@ -101,3 +101,4 @@ node_modules/
 !.env.sample
 dist/
 report/
+sqlite-tools/
