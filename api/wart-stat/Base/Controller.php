@@ -8,7 +8,7 @@ use Psr\Http\Message\ServerRequestInterface;
 class Controller {
     protected function makeJsonResponse(ResponseInterface $response, int $code, $data): ResponseInterface
     {
-        $body = "";
+        $body = null;
         try {
             $body = json_encode($data);
         } catch (\Throwable $th) {
@@ -27,8 +27,9 @@ class Controller {
         if (str_contains($contentType, 'application/json')) {
             return json_decode($data, true);
         } elseif (str_contains($contentType, 'application/x-www-form-urlencoded')) {
-            parse_str($data, $data);
-            return $data;
+            $result = null;
+            parse_str($data, $result);
+            return $result;
         }
         return null;
     }
