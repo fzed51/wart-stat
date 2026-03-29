@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace WartStat\Repository;
 
-use WartStat\Database\Database;
+use WartStat\Base\Database;
 use Psr\Log\LoggerInterface;
 
 /**

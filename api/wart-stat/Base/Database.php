@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace WartStat\Database;
+namespace WartStat\Base;
 
 use PDO;
 use PDOException;

@@ -3,7 +3,7 @@
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Monolog\Level;
-use WartStat\Database\Database;
+use WartStat\Base\Database;
 use Psr\Log\LoggerInterface;
 
 return function () {

@@ -9,7 +9,7 @@ ini_set('display_errors', 1);
 
 require __DIR__ . '/vendor/autoload.php';
 
-use WartStat\Database\Database;
+use WartStat\Base\Database;
 use WartStat\Service\MissionDataService;
 use WartStat\Repository\MissionRepository;
 use WartStat\Handler\MissionHandler;
