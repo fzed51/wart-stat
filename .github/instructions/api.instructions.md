@@ -211,7 +211,7 @@ return function (App $app) {
         $group->post('', [ReportController::class, 'create']);
         
         // Met à jour un rapport
-        $group->put('/{id}', [ReportController::class, 'update']);
+        $group->patch('/{id}', [ReportController::class, 'update']);
         
         // Supprime un rapport
         $group->delete('/{id}', [ReportController::class, 'delete']);
@@ -225,7 +225,7 @@ return function (App $app) {
 - **Méthode GET (liste)**: `list(Response $response)`
 - **Méthode GET (item)**: `getById(Request $request, Response $response)`
 - **Méthode POST**: `create(Request $request, Response $response)`
-- **Méthode PUT**: `update(Request $request, Response $response)`
+- **Méthode PATCH**: `update(Request $request, Response $response)`
 - **Méthode DELETE**: `delete(Request $request, Response $response)`
 
 ## Exécution et test
@@ -345,20 +345,7 @@ docker-compose up backend  # Démarre le service backend
    }
    ```
 
-5. **Enregistrer les dépendances dans `container.php`**
-   ```php
-   use WartStat\NewResource\NewResourceController;
-   use WartStat\NewResource\NewResourceRepository;
-   use WartStat\NewResource\NewResourceValidator;
-   
-   return [
-       NewResourceRepository::class => DI\autowire(),
-       NewResourceValidator::class => DI\autowire(),
-       NewResourceController::class => DI\autowire(),
-   ];
-   ```
-
-6. **Ajouter les routes dans `router.php`**
+5. **Ajouter les routes dans `router.php`**
    ```php
    use WartStat\NewResource\NewResourceController;
    
