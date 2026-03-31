@@ -80,6 +80,7 @@ try {
         echo "  Durée: " . sprintf("%d:%02d", $mins, $secs) . "\n";
     }
     echo "  Session: " . ($mission['session_id'] ?? 'N/A') . "\n";
+    echo "  Activité: " . ($mission['activity_pct'] ?? 0) . "%\n";
     echo "  Total SL gagné: " . ($mission['total_sl'] ?? 0) . "\n";
     echo "  Total RP gagné: " . ($mission['total_rp'] ?? 0) . "\n";
     echo "\n";

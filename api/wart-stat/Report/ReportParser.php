@@ -315,6 +315,18 @@ class ReportParser {
     }
 
     /**
+     * Parse activity rate (from "Activité: XX%" line)
+     * @param string $line Current line
+     * @return int|null Activity percentage (0-100) or null if not found
+     */
+    private function parseActivityRate(string $line): ?int {
+        if (preg_match('/^Activité:\s*(\d+)\%\s*$/i', $line, $m)) {
+            return (int)$m[1];
+        }
+        return null;
+    }
+
+    /**
      * Parse session ID (from "Session:" line)
      * @param string $line Current line
      * @return string|null Session ID or null if not found
@@ -442,6 +454,14 @@ class ReportParser {
             if (!empty($bonusData)) {
                 $this->log("Parsed bonus: {$bonusData['bonus_name']}", 'VERBOSE');
                 $missionData['mission_bonuses'][] = $bonusData;
+                continue;
+            }
+            
+            // Parse activity rate
+            $activityRate = $this->parseActivityRate($currentLine);
+            if ($activityRate !== null) {
+                $this->log("Parsed activity rate: {$activityRate}%", 'VERBOSE');
+                $missionData['mission']['activity_pct'] = $activityRate;
                 continue;
             }
             
