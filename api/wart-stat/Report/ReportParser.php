@@ -315,6 +315,19 @@ class ReportParser {
     }
 
     /**
+     * Parse participation reward (from "Récompense pour avoir participé à la mission" line)
+     * This appears in case of defeat or sometimes in victory
+     * @param string $line Current line
+     * @return int|null Participation reward SL or null if not found
+     */
+    private function parseParticipationReward(string $line): ?int {
+        if (preg_match('/^Récompense pour avoir participé à la mission\s+(\d+)\s+SL\s*$/i', $line, $m)) {
+            return (int)$m[1];
+        }
+        return null;
+    }
+
+    /**
      * Parse activity rate (from "Activité: XX%" line)
      * @param string $line Current line
      * @return int|null Activity percentage (0-100) or null if not found
@@ -462,6 +475,14 @@ class ReportParser {
             if ($activityRate !== null) {
                 $this->log("Parsed activity rate: {$activityRate}%", 'VERBOSE');
                 $missionData['mission']['activity_pct'] = $activityRate;
+                continue;
+            }
+            
+            // Parse participation reward
+            $participationReward = $this->parseParticipationReward($currentLine);
+            if ($participationReward !== null) {
+                $this->log("Parsed participation reward: {$participationReward} SL", 'VERBOSE');
+                $missionData['mission']['participation_reward'] = $participationReward;
                 continue;
             }
             

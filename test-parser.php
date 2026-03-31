@@ -132,6 +132,8 @@ try {
         $mission = $parsedData['mission'];
         echo "  Réparation: " . ($mission['repair_cost'] ?? 0) . " SL\n";
         echo "  Ammo/Équipage: " . ($mission['ammo_crew_cost'] ?? 0) . " SL\n";
+        echo "  Récompense victoire: " . ($mission['victory_reward'] ?? 0) . " SL\n";
+        echo "  Récompense participation: " . ($mission['participation_reward'] ?? 0) . " SL\n";
         $totalCosts = ($mission['repair_cost'] ?? 0) + ($mission['ammo_crew_cost'] ?? 0);
         echo "  Total des coûts: " . $totalCosts . " SL\n";
     } else {
