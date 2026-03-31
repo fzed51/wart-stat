@@ -16,13 +16,22 @@ class ReportParser {
     
     /** Action type names that appear in reports */
     protected array $actionNames = [
-        'Destruction de cibles terrestres',
-        'Destruction d\'avions',
-        'Destructions de munitions',
         'Assistance à la destruction d\'adversaires',
-        'Dégâts importants infligés à l\'ennemi',
+        'Atterrissages',
         'Coups critiques infligés aux ennemis',
+        'Destruction d\'avions',
+        'Destruction d\'ennemis repérés par des alliés',
+        'Destruction de bases',
+        'Destruction de cibles terrestres',
+        'Destruction de cibles terrestres et navales',
+        'Destruction de navires',
+        'Destructions de munitions',
+        'Décollages',
+        'Dégâts aux bases',
+        'Dégâts importants infligés à l\'ennemi',
         'Dégâts infligés aux ennemis',
+        'Dégâts reçus par les ennemis repérés',
+        'Repérage des adversaires',
     ];
     
     /** Bonus type names that appear in reports */
