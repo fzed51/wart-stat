@@ -10,10 +10,7 @@ ini_set('display_errors', 1);
 require __DIR__ . '/vendor/autoload.php';
 
 use WartStat\Base\Database;
-use WartStat\Service\MissionDataService;
 use WartStat\Repository\MissionRepository;
-use WartStat\Handler\MissionHandler;
-use Psr\Log\LoggerInterface;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 use Monolog\Level;
@@ -34,7 +31,7 @@ try {
 
     // Test 2: Create Database (without DI, testing path resolution)
     echo "Test 2: Creating Database (path resolution)...\n";
-    $db = new Database($logger);
+    $db = new Database('./data/wart_stat.db', $logger);
     echo "✅ Database connected\n";
     echo "   Database path: ./data/wart_stat.db\n\n";
 
