@@ -124,11 +124,23 @@ class Database
      * @param array $params Query parameters
      * @return int Last inserted ID
      */
-    public function insert(string $sql, array $params = []): int
+    public function insert(string $sql, array $params = [], string $fieldId = 'id'): int
     {
         try {
-            $this->execute($sql, $params);
-            return (int) $this->pdo->lastInsertId();
+            $sqliteVersion = $this->pdo->getAttribute(PDO::ATTR_SERVER_VERSION);
+            
+            // Si SQLite >= 3.35, utiliser RETURNING
+            if (version_compare($sqliteVersion, '3.35.0', '>=')) {
+                $sqlWithReturning = rtrim($sql, ';') . " RETURNING {$fieldId};";
+                $stmt = $this->pdo->prepare($sqlWithReturning);
+                $stmt->execute($params);
+                $result = $stmt->fetch(PDO::FETCH_ASSOC);
+                return (int) $result[$fieldId];
+            } else {
+                // Sinon utiliser lastInsertId()
+                $this->execute($sql, $params);
+                return (int) $this->pdo->lastInsertId();
+            }
         } catch (PDOException $e) {
             $this->logger->error("Insert failed: {$e->getMessage()}", ['sql' => $sql]);
             throw new RuntimeException("Insert failed: {$e->getMessage()}", 0, $e);
