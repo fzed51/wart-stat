@@ -193,44 +193,83 @@ class ReportParser {
     }
 
     /**
-     * Parse mission costs/prices
-     * @param string $line Current line
+     * Parse mission bonus rewards ("Prix" section - not repair costs!)
+     * These are bonus rewards from achievements during the mission
+     * @param string $line Current line (should start with "Prix")
      * @param array $lines Remaining lines (will be modified)
-     * @return array cost data for each vehicle
+     * @return array bonus data for each achievement
      */
-    private function parseMissionPrice(string $line, array &$lines): array {
+    private function parseMissionPrices(string $line, array &$lines): array {
         $data = [];
         if (preg_match('/^Prix\s{2,}(\d+)\s{2,}(\d+) SL(?:\s{2,}(\d+) RP)?$/i', $line, $m)) {
             $count = (int)$m[1];
-            $sl = (int)$m[2];
-            $rp = isset($m[3]) ? (int)$m[3] : 0;
-            $data = [
-                'repair_cost_sl' => $sl,
-                'repair_cost_rp' => $rp,
-                'details' => [],
-            ];
+            // Total rewards from this section
+            $totalSl = (int)$m[2];
+            $totalRp = isset($m[3]) ? (int)$m[3] : 0;
             
             if (count($lines) < $count) {
-                $this->log("Nombre insuffisant de lignes pour les détails des prix", 'WARN');
+                $this->log("Nombre insuffisant de lignes pour les détails des bonus prix", 'WARN');
                 return [];
             }
             
+            // Parse each bonus achievement
             for ($i = 0; $i < $count; $i++) {
                 $detailLine = trim(array_shift($lines));
-                if (preg_match('/^(.+?)\s{2,}(.+?)\s{2,}.*?(\d+) SL(?:\s{2,}.*?(\d+) RP)?$/i', $detailLine, $matches)) {
-                    $data['details'][] = [
-                        'vehicle_name' => trim($matches[1]),
-                        'repair_reason' => trim($matches[2]),
-                        'sl_cost' => (int)$matches[3],
-                        'rp_cost' => isset($matches[4]) ? (int)$matches[4] : 0,
+                // Format: HH:MM    Bonus Name    SL calculation    RP calculation
+                if (preg_match('/^(\d{1,2}:\d{2})\s{2,}(.+?)\s{2,}(\d+)\s+\+.*?=\s*(\d+) SL(?:\s{2,}(\d+)\s+\+.*?=\s*(\d+) RP)?/i', $detailLine, $matches)) {
+                    $data[] = [
+                        'timestamp_sec' => $this->timeToSeconds($matches[1]),
+                        'bonus_name' => trim($matches[2]),
+                        'sl_awarded' => (int)$matches[4],
+                        'rp_awarded' => isset($matches[6]) ? (int)$matches[6] : 0,
                     ];
                 } else {
-                    $this->log("Détail du prix invalide: '$detailLine'", 'WARN');
+                    $this->log("Détail du bonus prix invalide: '$detailLine'", 'WARN');
                 }
             }
             return $data;
         }
         return [];
+    }
+
+    /**
+     * Parse actual mission repair costs
+     * These appear as: "Réparation automatique de tous les véhicules: -XXXX SL"
+     * @param string $line Current line
+     * @return array|null cost data with type and amount
+     */
+    private function parseRepairCost(string $line): ?array {
+        // Format: "Réparation automatique de tous les véhicules: -XXXX SL"
+        if (preg_match('/^Réparation automatique.*:\s*-?(\d+)\s*SL\s*$/i', trim($line), $m)) {
+            return [
+                'type' => 'repair',
+                'cost_sl' => (int)$m[1],
+            ];
+        }
+        // Format: "Réparation automatique gratuite de tous les véhicules."
+        if (preg_match('/^Réparation automatique gratuite/i', trim($line))) {
+            return [
+                'type' => 'repair',
+                'cost_sl' => 0,
+            ];
+        }
+        return null;
+    }
+
+    /**
+     * Parse ammo and crew costs
+     * These appear as: "\"Achat automatique de munitions\" ... : -XXXX SL"
+     * @param string $line Current line
+     * @return array|null cost data with type and amount
+     */
+    private function parseAmmoCost(string $line): ?array {
+        if (preg_match('/^[\"\'"]?Achat automatique.*:\s*-?(\d+)\s*SL\s*$/i', trim($line), $m)) {
+            return [
+                'type' => 'ammo_crew',
+                'cost_sl' => (int)$m[1],
+            ];
+        }
+        return null;
     }
 
     /**
@@ -316,7 +355,6 @@ class ReportParser {
             'actions' => [],
             'mission_bonuses' => [],
             'activity_data' => [],
-            'costs' => [],
         ];
         
         $vehicleActivityData = [];
@@ -352,11 +390,34 @@ class ReportParser {
                 continue;
             }
             
-            // Parse costs/prices
-            $priceData = $this->parseMissionPrice($currentLine, $lines);
+            // Parse bonus prices (achievements)
+            $priceData = $this->parseMissionPrices($currentLine, $lines);
             if (!empty($priceData)) {
-                $this->log("Parsed mission costs", 'VERBOSE');
-                $missionData['costs'] = $priceData;
+                $this->log("Parsed mission achievement bonuses (Prix)", 'VERBOSE');
+                foreach ($priceData as $price) {
+                    $missionData['mission_bonuses'][] = [
+                        'bonus_name' => $price['bonus_name'] ?? 'Unknown Achievement',
+                        'timestamp_sec' => $price['timestamp_sec'] ?? 0,
+                        'sl_awarded' => $price['sl_awarded'] ?? 0,
+                        'rp_awarded' => $price['rp_awarded'] ?? 0,
+                    ];
+                }
+                continue;
+            }
+            
+            // Parse repair costs
+            $repairCost = $this->parseRepairCost($currentLine);
+            if ($repairCost !== null) {
+                $this->log("Parsed repair cost: {$repairCost['cost_sl']} SL", 'VERBOSE');
+                $missionData['mission']['repair_cost'] = $repairCost['cost_sl'];
+                continue;
+            }
+            
+            // Parse ammo/crew costs
+            $ammoCost = $this->parseAmmoCost($currentLine);
+            if ($ammoCost !== null) {
+                $this->log("Parsed ammo/crew cost: {$ammoCost['cost_sl']} SL", 'VERBOSE');
+                $missionData['mission']['ammo_crew_cost'] = $ammoCost['cost_sl'];
                 continue;
             }
             

@@ -124,14 +124,15 @@ try {
     }
     echo "\n";
 
-    // Coûts
-    echo "💰 COÛTS\n";
-    echo "--------\n";
-    if (!empty($parsedData['costs'])) {
-        $costs = $parsedData['costs'];
-        echo "  Total SL de réparation: " . ($costs['repair_cost_sl'] ?? 0) . "\n";
-        echo "  Total RP de réparation: " . ($costs['repair_cost_rp'] ?? 0) . "\n";
-        echo "  Détails par véhicule: " . count($costs['details'] ?? []) . "\n";
+    // Coûts réels
+    echo "💰 COÛTS RÉELS\n";
+    echo "--------------\n";
+    if (!empty($parsedData['mission'])) {
+        $mission = $parsedData['mission'];
+        echo "  Réparation: " . ($mission['repair_cost'] ?? 0) . " SL\n";
+        echo "  Ammo/Équipage: " . ($mission['ammo_crew_cost'] ?? 0) . " SL\n";
+        $totalCosts = ($mission['repair_cost'] ?? 0) + ($mission['ammo_crew_cost'] ?? 0);
+        echo "  Total des coûts: " . $totalCosts . " SL\n";
     } else {
         echo "  Aucun coût parsé\n";
     }
