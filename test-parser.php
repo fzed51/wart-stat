@@ -26,6 +26,18 @@ try {
         $reportIndex = (int)$matches[1];
     }
     
+    // Vérifier les paramètres secondaires (peuvent être dans n'importe quel ordre après l'index)
+    $verbose = false;
+    $showReport = false;
+    
+    for ($i = 2; $i < count($argv); $i++) {
+        if ($argv[$i] === '--verbose' || $argv[$i] === '-v') {
+            $verbose = true;
+        } elseif ($argv[$i] === '--show-report' || $argv[$i] === '-r') {
+            $showReport = true;
+        }
+    }
+    
     // Charger le rapport
     $reportFile = __DIR__ . '/report/report' . $reportIndex . '.txt';
     
@@ -43,18 +55,6 @@ try {
 
     // Parser le rapport
     $parser = new ReportParser();
-    
-    // Vérifier les paramètres secondaires (peuvent être dans n'importe quel ordre après l'index)
-    $verbose = false;
-    $showReport = false;
-    
-    for ($i = 2; $i < count($argv); $i++) {
-        if ($argv[$i] === '--verbose' || $argv[$i] === '-v') {
-            $verbose = true;
-        } elseif ($argv[$i] === '--show-report' || $argv[$i] === '-r') {
-            $showReport = true;
-        }
-    }
     
     if ($verbose) {
         $parser->setVerbose(true);
