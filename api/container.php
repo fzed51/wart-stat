@@ -46,11 +46,6 @@ return function () {
 
             return $pdo;
         },
-
-        Database::class => function ($container) {
-            $dbPath = __DIR__ . '/../data/database.sqlite';
-            return new Database($dbPath, $container->get(LoggerInterface::class));
-        },
     ]);
 
     // Here you can add definitions to the container
