@@ -12,6 +12,7 @@ class ReportController extends Controller
 
     public function __construct(
         private ReportRepository $repository,
+        private ReportDetailsRepository $detailsRepository,
         private ReportValidator $validator,
         private ReportParser $parser,
         private MissionRepository $missionRepository,
@@ -80,6 +81,24 @@ class ReportController extends Controller
         $this->logger->info('~list~');
 
         $reports = $this->repository->findAll();
+
+        return $this->makeJsonResponse($response, 200, $reports);
+    }
+
+    public function listDetails(Request $request, Response $response): Response
+    {
+        $this->logger->info('~listDetails~');
+
+        $params = $request->getQueryParams();
+        $limit = (int)($params['limit'] ?? 1000);
+        $offset = (int)($params['offset'] ?? 0);
+        $country = $params['country'] ?? null;
+
+        if ($country) {
+            $reports = $this->detailsRepository->findByCountry($country, $limit, $offset);
+        } else {
+            $reports = $this->detailsRepository->findAll($limit, $offset);
+        }
 
         return $this->makeJsonResponse($response, 200, $reports);
     }

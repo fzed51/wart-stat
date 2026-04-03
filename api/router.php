@@ -16,10 +16,10 @@ return function (App $app) {
     
     // Reports
     $app->group('/reports', function (Group $group) {
-        $group->get('', [ReportController::class, 'list']);
+        $group->get('', [ReportController::class, 'listDetails']);
         //$group->get('/{id}', [ReportController::class, 'getById']);
         $group->post('', [ReportController::class, 'create']);
-        //$group->put('/{id}', [ReportController::class, 'update']);
+        //$group->patch('/{id}', [ReportController::class, 'update']);
         //$group->delete('/{id}', [ReportController::class, 'delete']);
     });
 };
