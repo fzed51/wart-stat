@@ -25,7 +25,6 @@ class ReportRepository
                 created_at TEXT default (replace(CURRENT_TIMESTAMP, ' ', 'T') || 'Z')
             )
         ");
-        
         // Add session_id column if it doesn't exist (for backwards compatibility)
         try {
             $this->pdo->exec('ALTER TABLE reports ADD COLUMN session_id TEXT UNIQUE');
@@ -36,6 +35,16 @@ class ReportRepository
 
     public function create(array $data): array
     {
+
+        // Extract session_id from report content (quick extraction without full parse)
+        $sessionId = null;
+        if (preg_match('/^Session:\s*([a-f0-9]+)\s*$/im', $data['content'], $matches)) {
+            $sessionId = $matches[1];
+        }
+        if (!$sessionId) {
+            throw new \InvalidArgumentException("Session ID not found in report content");
+        }
+
         $stmt = $this->pdo->prepare('
             INSERT INTO reports (country, datetime, session_id, content)
             VALUES (:country, :datetime, :session_id, :content)
@@ -44,7 +53,7 @@ class ReportRepository
         $stmt->execute([
             'country' => $data['country'],
             'datetime' => $data['datetime'],
-            'session_id' => $data['session_id'] ?? null,
+            'session_id' => $sessionId,
             'content' => $data['content'],
         ]);
 
