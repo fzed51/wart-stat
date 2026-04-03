@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useReportStore, type ReportFormData } from '../stores/reportStore';
+import { usePreferencesStore } from '../stores/preferencesStore';
 import { CountrySelect } from './ContrySelect';
 
 const getDefaultDate = (): string => {
@@ -14,9 +15,10 @@ const getDefaultTime = (): string => {
 export default function ReportForm() {
   const navigate = useNavigate();
   const { addReport, isLoading, error } = useReportStore();
+  const { lastCountry, updateLastCountry } = usePreferencesStore();
 
   const [formData, setFormData] = useState<ReportFormData>({
-    country: 'FR',
+    country: lastCountry || 'FR',
     date: getDefaultDate(),
     time: getDefaultTime(),
     content: '',
@@ -30,6 +32,7 @@ export default function ReportForm() {
 
     try {
       await addReport(formData);
+      updateLastCountry(formData.country);
       navigate('/');
     } catch {
       // L'erreur est gérée par le store
