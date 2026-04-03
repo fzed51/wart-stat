@@ -9,6 +9,21 @@ export interface Report {
   content: string;
 }
 
+
+export interface ReportDetail {
+  report_id: number;
+  country: Country;
+  datetime: string; // ISO format
+  session_id: string | null;
+  win_lost: string;
+  mission_type: string;
+  carte: string;
+  temps_jeux: number;
+  points_totaux: number;
+  total_sl: number;
+  total_rp: number;
+}
+
 export interface ReportFormData {
   country: Country;
   date: string;
@@ -17,7 +32,7 @@ export interface ReportFormData {
 }
 
 interface ReportState {
-  reports: Report[];
+  reports: ReportDetail[];
   isLoading: boolean;
   error: string | null;
   fetchReports: () => Promise<void>;

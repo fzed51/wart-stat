@@ -79,21 +79,31 @@ export default function ReportsList() {
                 <th>Pays</th>
                 <th>Date</th>
                 <th>Heure</th>
-                <th>Contenu</th>
+                <th>Session</th>
+                <th>Résultat</th>
+                <th>Mission</th>
+                <th>Carte</th>
+                <th>Temps (s)</th>
+                <th>Points</th>
+                <th>SL</th>
+                <th>RP</th>
               </tr>
             </thead>
             <tbody>
               {reports.map((report) => (
-                <tr key={report.id}>
-                  <td className="table-id">{report.id}</td>
+                <tr key={report.report_id}>
+                  <td className="table-id">{report.report_id}</td>
                   <td className="table-country">{countryNames[report.country] || report.country}</td>
                   <td className="table-date">{formatDate(report.datetime)}</td>
                   <td className="table-time">{formatTime(report.datetime)}</td>
-                  <td className="table-content">
-                    <div className="content-preview">
-                      {report.content}
-                    </div>
-                  </td>
+                  <td className="table-session">{report.session_id || '-'}</td>
+                  <td className="table-result">{report.win_lost}</td>
+                  <td className="table-mission">{report.mission_type}</td>
+                  <td className="table-carte">{report.carte}</td>
+                  <td className="table-duration">{report.temps_jeux}</td>
+                  <td className="table-points">{report.points_totaux.toLocaleString('fr-FR')}</td>
+                  <td className="table-sl">{report.total_sl.toLocaleString('fr-FR')}</td>
+                  <td className="table-rp">{report.total_rp.toLocaleString('fr-FR')}</td>
                 </tr>
               ))}
             </tbody>
