@@ -20,22 +20,31 @@ class ReportRepository
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 country TEXT NOT NULL,
                 datetime TEXT NOT NULL,
+                session_id TEXT UNIQUE,
                 content TEXT NOT NULL,
                 created_at TEXT default (replace(CURRENT_TIMESTAMP, ' ', 'T') || 'Z')
             )
         ");
+        
+        // Add session_id column if it doesn't exist (for backwards compatibility)
+        try {
+            $this->pdo->exec('ALTER TABLE reports ADD COLUMN session_id TEXT UNIQUE');
+        } catch (\PDOException $e) {
+            // Column already exists, ignore
+        }
     }
 
     public function create(array $data): array
     {
         $stmt = $this->pdo->prepare('
-            INSERT INTO reports (country, datetime, content)
-            VALUES (:country, :datetime, :content)
+            INSERT INTO reports (country, datetime, session_id, content)
+            VALUES (:country, :datetime, :session_id, :content)
         ');
 
         $stmt->execute([
             'country' => $data['country'],
             'datetime' => $data['datetime'],
+            'session_id' => $data['session_id'] ?? null,
             'content' => $data['content'],
         ]);
 
@@ -59,5 +68,49 @@ class ReportRepository
         $stmt = $this->pdo->query('SELECT * FROM reports ORDER BY datetime DESC');
 
         return $stmt->fetchAll();
+    }
+
+    public function findByDateTime(string $datetime): ?array
+    {
+        $stmt = $this->pdo->prepare('SELECT * FROM reports WHERE datetime = :datetime');
+        $stmt->execute(['datetime' => $datetime]);
+
+        $result = $stmt->fetch();
+
+        return $result ?: null;
+    }
+
+    public function findByDateTimeAndCountry(string $datetime, string $country): ?array
+    {
+        $stmt = $this->pdo->prepare('SELECT * FROM reports WHERE datetime = :datetime AND country = :country');
+        $stmt->execute(['datetime' => $datetime, 'country' => $country]);
+
+        $result = $stmt->fetch();
+
+        return $result ?: null;
+    }
+
+    public function exists(string $datetime, string $country): bool
+    {
+        $stmt = $this->pdo->prepare('SELECT 1 FROM reports WHERE datetime = :datetime AND country = :country LIMIT 1');
+        $stmt->execute(['datetime' => $datetime, 'country' => $country]);
+        return $stmt->fetch() !== false;
+    }
+
+    public function findBySessionId(string $sessionId): ?array
+    {
+        $stmt = $this->pdo->prepare('SELECT * FROM reports WHERE session_id = :session_id');
+        $stmt->execute(['session_id' => $sessionId]);
+        return $stmt->fetch() ?: null;
+    }
+
+    public function existsBySessionId(string $sessionId): bool
+    {
+        if (empty($sessionId)) {
+            return false;
+        }
+        $stmt = $this->pdo->prepare('SELECT 1 FROM reports WHERE session_id = :session_id LIMIT 1');
+        $stmt->execute(['session_id' => $sessionId]);
+        return $stmt->fetch() !== false;
     }
 }
