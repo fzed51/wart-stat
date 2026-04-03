@@ -17,6 +17,7 @@ class ReportController extends Controller
         private MissionRepository $missionRepository,
         private MissionActionRepository $actionRepository,
         private MissionBonusRepository $bonusRepository,
+        private ReportFileHandler $fileHandler,
         private Logger $logger
     ) {
     }
@@ -38,6 +39,14 @@ class ReportController extends Controller
             'country' => $data['country'],
             'datetime' => $data['datetime'],
             'content' => $data['content'],
+        ]);
+
+        // 1.5 Enregistrer le contenu du rapport dans un fichier
+        $fileInfo = $this->fileHandler->saveReport($data['content']);
+        $this->logger->debug("Report saved to file", [
+            'report_id' => $report['id'],
+            'file_index' => $fileInfo['index'],
+            'filename' => $fileInfo['filename'],
         ]);
 
         // 2. Parser le contenu du report
