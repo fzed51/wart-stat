@@ -75,6 +75,29 @@ try {
     echo "════════════════════════════════════════════════════════════════\n\n";
     printf("Found %d report files to process\n\n", count($files));
     
+    /**
+     * Display progress bar with percentage and statistics
+     */
+    $displayProgress = function($current, $total, $stats, $elapsed) {
+        $percentage = ($current / $total) * 100;
+        $barLength = 32;
+        $filledLength = (int)($barLength * $current / $total);
+        $bar = str_repeat('█', $filledLength) . str_repeat('░', $barLength - $filledLength);
+        
+        $rate = $elapsed > 0 ? $current / $elapsed : 0;
+        $remaining = $rate > 0 ? ($total - $current) / $rate : 0;
+        
+        printf("\r[%s] %3d%% (%d/%d) | %d new, %d skip | ETA: %s",
+            $bar,
+            (int)$percentage,
+            $current,
+            $total,
+            $stats['reports_created'],
+            $stats['skipped'],
+            gmdate('H:i:s', (int)$remaining)
+        );
+    };
+    
     // Statistics
     $stats = [
         'total_files' => count($files),
@@ -190,18 +213,10 @@ try {
                 throw $e;
             }
             
-            // Progress output every 50 files
-            if ($fileNumber % 50 === 0) {
+            // Progress output every 10 files
+            if ($fileNumber % 10 === 0) {
                 $elapsed = time() - $batchStart;
-                $rate = $stats['reports_created'] / max(1, $elapsed);
-                $remaining = ($stats['total_files'] - $stats['reports_created']) / max(0.1, $rate);
-                printf("[%4d/%d] Progress: %.1f%% | Rate: %.2f/sec | ETA: %s\n",
-                    $fileNumber,
-                    count($files),
-                    (($fileNumber / count($files)) * 100),
-                    $rate,
-                    gmdate('H:i:s', (int)$remaining)
-                );
+                $displayProgress($fileNumber, count($files), $stats, $elapsed);
             }
             
         } catch (\Exception $e) {
@@ -217,6 +232,11 @@ try {
         }
     }
     
+    // Final progress update
+    $elapsed = time() - $batchStart;
+    $displayProgress(count($files), count($files), $stats, $elapsed);
+    echo "\n\n";
+    
     // Summary
     $scriptEnd = microtime(true);
     $duration = $scriptEnd - $scriptStart;
@@ -230,9 +250,8 @@ try {
     printf("  • Missions created:  %d\n", $stats['missions_created']);
     printf("  • Actions created:   %d\n", $stats['actions_created']);
     printf("  • Bonuses created:   %d\n", $stats['bonuses_created']);
-    printf("  • Skipped:           %d\n", $stats['skipped']);
-    printf("  • Errors:            %d\n", $stats['errors']);
     printf("  • Skipped (dupes):   %d\n", $stats['skipped']);
+    printf("  • Errors:            %d\n", $stats['errors']);
     printf("  • Duration:          %.1f minutes\n", $duration / 60);
     printf("  • Rate:              %.2f reports/second\n\n", ($stats['reports_created'] > 0 ? $stats['reports_created'] / $duration : 0));
     
