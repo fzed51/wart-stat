@@ -102,4 +102,38 @@ class ReportController extends Controller
 
         return $this->makeJsonResponse($response, 200, $reports);
     }
+
+    public function getById(Request $request, Response $response): Response
+    {
+        $this->logger->info('~getById~');
+
+        $reportId = (int)$request->getAttribute('id');
+
+        // Get report details
+        $report = $this->repository->findById($reportId);
+        if (!$report) {
+            return $this->makeJsonResponse($response, 404, ['error' => 'Report not found']);
+        }
+
+        // Get associated mission
+        $missions = $this->missionRepository->findByReportId($reportId, 1);
+        $mission = $missions[0] ?? null;
+
+        if (!$mission) {
+            return $this->makeJsonResponse($response, 404, ['error' => 'Mission not found for report']);
+        }
+
+        // Get associated actions
+        $actions = $this->actionRepository->findByMissionId($mission['id']);
+
+        // Get associated bonuses
+        $bonuses = $this->bonusRepository->findByMissionId($mission['id']);
+
+        return $this->makeJsonResponse($response, 200, [
+            'report' => $report,
+            'mission' => $mission,
+            'actions' => $actions,
+            'bonuses' => $bonuses,
+        ]);
+    }
 }
