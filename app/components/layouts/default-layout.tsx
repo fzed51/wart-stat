@@ -8,8 +8,8 @@ export function DefaultLayout({children}: PropsWithChildren) {
         <Link to="/">Accueil</Link>
         <Link to="/reports">Rapports</Link>
       </nav>
-      <main className="page">
-        <Suspense fallback={<div className="loading">Chargement</div>}>
+      <main>
+        <Suspense fallback={<div className="page"><div className="loading">Chargement...</div></div>}>
           {children}
         </Suspense>
       </main>

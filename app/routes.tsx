@@ -17,12 +17,12 @@ export const routes: RouteObject[] = [
     element: <ReportsList />,
   },
   {
-    path: '/reports/:id',
-    element: <ReportDetail />,
-  },
-  {
     path: '/reports/add',
     element: <AddReport />,
+  },
+  {
+    path: '/reports/:id',
+    element: <ReportDetail />,
   },
   {
     path: '*',
