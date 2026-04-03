@@ -1,6 +1,8 @@
 import { create } from 'zustand';
+import { type Country } from '../constants/countries';
 
-export type Country = 'US' | 'GER' | 'URRS' | 'UK' | 'JAP' | 'CH' | 'IT' | 'FR' | 'SU' | 'IS';
+// Réexporte le type Country pour maintenir la compatibilité avec les imports existants
+export type { Country } from '../constants/countries';
 
 export interface Report {
   id?: number;

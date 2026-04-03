@@ -1,19 +1,7 @@
 import { useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useReportStore } from '../stores/reportStore';
-
-const countryNames: Record<string, string> = {
-  US: 'États-Unis',
-  GER: 'Allemagne',
-  URRS: 'URSS',
-  UK: 'Royaume-Uni',
-  JAP: 'Japon',
-  CH: 'Chine',
-  IT: 'Italie',
-  FR: 'France',
-  SU: 'Suède',
-  IS: 'Islande',
-};
+import { getCountryLabel } from '../constants/countries';
 
 const formatDate = (isoString: string): string => {
   const date = new Date(isoString);
@@ -40,6 +28,20 @@ export default function ReportsList() {
     fetchReports();
   }, [fetchReports]);
 
+  const WonLostRender = useCallback((result: string) => {
+    const style = {width: '2em', height: '2em'};
+    let className = 'result-lost';
+    let src = '/picto/skull.svg';
+    let alt = 'Défaite';
+    if (result.toLowerCase() === 'victoire') {
+      className = 'result-win';
+      src = '/picto/military-medal.svg';
+      alt = 'Victoire';
+      
+    }
+    return <img {...{className, src, alt, style}} />;
+  }, []);
+
   if (isLoading) {
     return (
       <div className="page">
@@ -55,20 +57,6 @@ export default function ReportsList() {
       </div>
     );
   }
-
-  const WonLostRender = useCallback((result: string) => {
-    const style = {width: '2em', height: '2em'};
-    let className = 'result-lost';
-    let src = '/picto/skull.svg';
-    let alt = 'Défaite';
-    if (result.toLowerCase() === 'victoire') {
-      className = 'result-win';
-      src = '/picto/military-medal.svg';
-      alt = 'Victoire';
-      
-    }
-    return <img {...{className, src, alt, style}} />;
-  }, []);
 
   return (
     <div className="page">
@@ -104,11 +92,11 @@ export default function ReportsList() {
             </thead>
             <tbody>
               {reports.map((report) => (
-                <tr key={report.report_id}>
+                <tr key={report.report_id} onClick={() => navigate(`/reports/${report.report_id}`)} className="clickable-row">
                   <td className="table-id"><span title={
                     report.session_id || "-"
-                  }>{report.report_id}</span></td>
-                  <td className="table-country">{countryNames[report.country] || report.country}</td>
+                  } className="id-link">{report.report_id}</span></td>
+                  <td className="table-country">{getCountryLabel(report.country)}</td>
                   <td className="table-date">{formatDate(report.datetime)}</td>
                   <td className="table-time">{formatTime(report.datetime)}</td>
                   <td className="table-result">{WonLostRender(report.win_lost)}</td>
