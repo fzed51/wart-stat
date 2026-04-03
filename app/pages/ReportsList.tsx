@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useReportStore } from '../stores/reportStore';
 
@@ -56,6 +56,20 @@ export default function ReportsList() {
     );
   }
 
+  const WonLostRender = useCallback((result: string) => {
+    const style = {width: '2em', height: '2em'};
+    let className = 'result-lost';
+    let src = '/picto/skull.svg';
+    let alt = 'Défaite';
+    if (result.toLowerCase() === 'victoire') {
+      className = 'result-win';
+      src = '/picto/military-medal.svg';
+      alt = 'Victoire';
+      
+    }
+    return <img {...{className, src, alt, style}} />;
+  }, []);
+
   return (
     <div className="page">
       <div className="page-header">
@@ -79,8 +93,7 @@ export default function ReportsList() {
                 <th>Pays</th>
                 <th>Date</th>
                 <th>Heure</th>
-                <th>Session</th>
-                <th>Résultat</th>
+                <th>W/L</th>
                 <th>Mission</th>
                 <th>Carte</th>
                 <th>Temps (s)</th>
@@ -92,12 +105,13 @@ export default function ReportsList() {
             <tbody>
               {reports.map((report) => (
                 <tr key={report.report_id}>
-                  <td className="table-id">{report.report_id}</td>
+                  <td className="table-id"><span title={
+                    report.session_id || "-"
+                  }>{report.report_id}</span></td>
                   <td className="table-country">{countryNames[report.country] || report.country}</td>
                   <td className="table-date">{formatDate(report.datetime)}</td>
                   <td className="table-time">{formatTime(report.datetime)}</td>
-                  <td className="table-session">{report.session_id || '-'}</td>
-                  <td className="table-result">{report.win_lost}</td>
+                  <td className="table-result">{WonLostRender(report.win_lost)}</td>
                   <td className="table-mission">{report.mission_type}</td>
                   <td className="table-carte">{report.carte}</td>
                   <td className="table-duration">{report.temps_jeux}</td>
