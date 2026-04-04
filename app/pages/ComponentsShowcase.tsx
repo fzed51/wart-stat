@@ -4,13 +4,21 @@ import {
   Alert,
   Badge,
   Button,
+  ButtonGroup,
   Card,
+  EmptyState,
   Input,
   PageHeader,
   Select,
   Separator,
+  Table,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell,
   Terminal,
   TerminalLine,
+  Textarea,
 } from '../components/common';
 
 /* ── Types ────────────────────────────────────────────────────────────────── */
@@ -27,8 +35,12 @@ const SECTIONS: SectionDef[] = [
   { id: 'alert',      label: 'Alert',      group: 'Feedback' },
   { id: 'card',       label: 'Card',       group: 'Conteneurs' },
   { id: 'terminal',   label: 'Terminal',   group: 'Conteneurs' },
+  { id: 'emptystate',  label: 'EmptyState', group: 'Conteneurs' },
   { id: 'input',      label: 'Input',      group: 'Formulaires' },
+  { id: 'textarea',   label: 'Textarea',   group: 'Formulaires' },
   { id: 'select',     label: 'Select',     group: 'Formulaires' },
+  { id: 'buttongroup',label: 'ButtonGroup',group: 'Formulaires' },
+  { id: 'table',      label: 'Table',      group: 'Données' },
   { id: 'separator',  label: 'Separator',  group: 'Mise en page' },
   { id: 'pageheader', label: 'PageHeader', group: 'Mise en page' },
 ];
@@ -344,6 +356,157 @@ export default function ComponentsShowcase() {
   title="Nom de la page"
   subtitle="Description courte de la page"
 />`}
+            />
+          </Section>
+
+          <Separator label="Nouveaux composants" />
+
+          {/* Textarea */}
+          <Section id="textarea" name="Textarea" desc="Champ multi-ligne avec compteur">
+            <Block
+              label="États"
+              previewMod="form"
+              preview={
+                <>
+                  <Textarea label="Description" placeholder="Entrez une description..." />
+                  <Textarea
+                    label="Rapport"
+                    placeholder="Contenu du rapport"
+                    maxLength={200}
+                    showCounter
+                    value="Ceci est un exemple avec compteur de caractères. C'est utile po"
+                    onChange={() => {}}
+                  />
+                  <Textarea
+                    label="Erreur"
+                    placeholder="Erreur de validation"
+                    error="Le contenu est requis"
+                  />
+                </>
+              }
+              code={`{/* Basique */}
+<Textarea label="Description" placeholder="..." />
+
+{/* Avec compteur */}
+<Textarea
+  label="Rapport"
+  maxLength={200}
+  showCounter
+  value={content}
+  onChange={(e) => setContent(e.target.value)}
+/>
+
+{/* Avec erreur */}
+<Textarea label="Erreur" error="Requis" />`}
+            />
+          </Section>
+
+          {/* ButtonGroup */}
+          <Section id="buttongroup" name="ButtonGroup" desc="Groupe de boutons alignés">
+            <Block
+              label="Horizontal (défaut)"
+              preview={
+                <ButtonGroup>
+                  <Button variant="ghost">Annuler</Button>
+                  <Button variant="primary">Valider</Button>
+                </ButtonGroup>
+              }
+              code={`<ButtonGroup>
+  <Button variant="ghost">Annuler</Button>
+  <Button variant="primary">Valider</Button>
+</ButtonGroup>`}
+            />
+            <Block
+              label="Vertical"
+              previewMod="column"
+              preview={
+                <ButtonGroup vertical>
+                  <Button>Action 1</Button>
+                  <Button>Action 2</Button>
+                  <Button>Action 3</Button>
+                </ButtonGroup>
+              }
+              code={`<ButtonGroup vertical>
+  <Button>Action 1</Button>
+  <Button>Action 2</Button>
+  <Button>Action 3</Button>
+</ButtonGroup>`}
+            />
+          </Section>
+
+          {/* EmptyState */}
+          <Section id="emptystate" name="EmptyState" desc="État vide avec message et action">
+            <Block
+              previewMod="column"
+              preview={
+                <EmptyState
+                  icon="∅"
+                  title="Aucun résultat"
+                  description="Aucun rapport trouvé pour ces critères de recherche."
+                  action={<Button variant="primary">Créer un rapport</Button>}
+                />
+              }
+              code={`<EmptyState
+  icon="∅"
+  title="Aucun résultat"
+  description="Aucun rapport trouvé."
+  action={<Button onClick={...}>Créer</Button>}
+/>`}
+            />
+          </Section>
+
+          {/* Table */}
+          <Section id="table" name="Table" desc="Tableau de données">
+            <Block
+              previewMod="column"
+              preview={
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell isHeader>ID</TableCell>
+                      <TableCell isHeader>Pays</TableCell>
+                      <TableCell isHeader>Mission</TableCell>
+                      <TableCell isHeader align="right">Points</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    <TableRow onClick={() => {}}>
+                      <TableCell>#042</TableCell>
+                      <TableCell>France</TableCell>
+                      <TableCell>Destruction</TableCell>
+                      <TableCell align="right">1500</TableCell>
+                    </TableRow>
+                    <TableRow onClick={() => {}}>
+                      <TableCell>#041</TableCell>
+                      <TableCell>Allemagne</TableCell>
+                      <TableCell>Capture</TableCell>
+                      <TableCell align="right">2100</TableCell>
+                    </TableRow>
+                    <TableRow onClick={() => {}}>
+                      <TableCell>#040</TableCell>
+                      <TableCell>Russie</TableCell>
+                      <TableCell>Survie</TableCell>
+                      <TableCell align="right">850</TableCell>
+                    </TableRow>
+                  </TableBody>
+                </Table>
+              }
+              code={`<Table>
+  <TableHead>
+    <TableRow>
+      <TableCell isHeader>ID</TableCell>
+      <TableCell isHeader>Pays</TableCell>
+      <TableCell isHeader align="right">Points</TableCell>
+    </TableRow>
+  </TableHead>
+  <TableBody>
+    <TableRow onClick={() => navigate(...)}>  
+      <TableCell>#042</TableCell>
+      <TableCell>France</TableCell>
+      <TableCell align="right">1500</TableCell>
+    </TableRow>
+  </TableBody>
+</Table>`}
             />
           </Section>
 

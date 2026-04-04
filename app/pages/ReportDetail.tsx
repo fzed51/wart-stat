@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getCountryLabel } from '../constants/countries';
-import { PageHeader, Alert, Button, Badge, Card, Separator } from '../components/common';
+import { Alert, Button } from '../components/common';
 
 interface Action {
   id: number;

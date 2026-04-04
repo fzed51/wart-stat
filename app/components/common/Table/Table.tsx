@@ -19,6 +19,7 @@ interface TableRowProps {
   children: React.ReactNode;
   onClick?: () => void;
   className?: string;
+  style?: React.CSSProperties;
 }
 
 interface TableCellProps {
@@ -44,9 +45,13 @@ export function TableBody({ children }: TableBodyProps) {
   return <tbody>{children}</tbody>;
 }
 
-export function TableRow({ children, onClick, className }: TableRowProps) {
+export function TableRow({ children, onClick, className, style }: TableRowProps) {
+  const rowStyle: React.CSSProperties = {
+    ...(onClick ? { cursor: 'pointer' } : {}),
+    ...style,
+  };
   return (
-    <tr onClick={onClick} className={className} style={onClick ? { cursor: 'pointer' } : {}}>
+    <tr onClick={onClick} className={className} style={rowStyle}>
       {children}
     </tr>
   );
