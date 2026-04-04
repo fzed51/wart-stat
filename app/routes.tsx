@@ -5,6 +5,7 @@ const Home = lazy(() => import('./pages/Home'));
 const AddReport = lazy(() => import('./pages/AddReport'));
 const ReportsList = lazy(() => import('./pages/ReportsList'));
 const ReportDetail = lazy(() => import('./pages/ReportDetail'));
+const ComponentsShowcase = lazy(() => import('./pages/ComponentsShowcase'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 export const routes: RouteObject[] = [
@@ -23,6 +24,10 @@ export const routes: RouteObject[] = [
   {
     path: '/reports/:id',
     element: <ReportDetail />,
+  },
+  {
+    path: '/components',
+    element: <ComponentsShowcase />,
   },
   {
     path: '*',

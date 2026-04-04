@@ -1,0 +1,40 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   BADGE — Étiquettes de statut
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.6rem;
+  border: 1px solid currentColor;
+  white-space: nowrap;
+}
+
+.badge--success {
+  color: var(--color-success);
+  background: rgba(0, 255, 0, 0.08);
+}
+
+.badge--error {
+  color: var(--color-error);
+  background: rgba(255, 51, 51, 0.08);
+}
+
+.badge--warning {
+  color: var(--color-warning);
+  background: rgba(255, 255, 0, 0.08);
+}
+
+.badge--info {
+  color: var(--color-text-secondary);
+  background: rgba(0, 204, 0, 0.08);
+}
+
+.badge--neutral {
+  color: var(--color-text-muted);
+  background: rgba(0, 136, 0, 0.08);
+}

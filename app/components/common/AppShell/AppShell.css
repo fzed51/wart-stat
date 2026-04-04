@@ -1,0 +1,32 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   APP SHELL — Fond & Effet Vieux Écran CRT
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.app-shell {
+  position: relative;
+  min-height: 100vh;
+  background:
+    radial-gradient(ellipse at top, var(--color-bg-secondary) 0%, transparent 50%),
+    radial-gradient(ellipse at bottom, var(--color-bg-tertiary) 0%, transparent 50%),
+    var(--color-bg-primary);
+  background-attachment: fixed;
+}
+
+/* Effet scanlines / vieux écran CRT */
+.app-shell::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.15),
+    rgba(0, 0, 0, 0.15) 1px,
+    transparent 1px,
+    transparent 2px
+  );
+  pointer-events: none;
+  z-index: 9999;
+}

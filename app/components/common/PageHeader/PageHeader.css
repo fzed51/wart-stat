@@ -1,0 +1,21 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   PAGE HEADER — En-tête de page avec titre et sous-titre
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.page-header {
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.page-header__subtitle {
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+  letter-spacing: 0.05em;
+}
+
+.page-header__subtitle::before {
+  content: '// ';
+  color: var(--color-text-dim);
+}

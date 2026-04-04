@@ -1,0 +1,78 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   RESET & VARIABLES — Hacker Theme
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* Backgrounds */
+  --color-bg-primary: #0a0a0a;
+  --color-bg-secondary: #0d1a0d;
+  --color-bg-tertiary: #121f12;
+  --color-bg-card: rgba(0, 30, 0, 0.6);
+  --color-bg-input: rgba(0, 20, 0, 0.8);
+
+  /* Verts */
+  --color-green-dark: #003300;
+  --color-green-primary: #00ff00;
+  --color-green-light: #33ff33;
+  --color-green-glow: #00ff0080;
+  --color-green-dim: #00aa00;
+  --color-green-muted: #008800;
+
+  /* Texte */
+  --color-text-primary: #00ff00;
+  --color-text-secondary: #00cc00;
+  --color-text-muted: #008800;
+  --color-text-dim: #006600;
+
+  /* Bordures */
+  --color-border: #00ff0040;
+  --color-border-hover: #00ff00;
+  --color-border-focus: #33ff33;
+
+  /* États */
+  --color-error: #ff3333;
+  --color-error-bg: rgba(255, 0, 0, 0.1);
+  --color-success: #00ff00;
+  --color-warning: #ffff00;
+
+  /* Typographie */
+  font-family: 'Fira Code', 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono',
+    'Source Code Pro', 'Courier New', monospace;
+  font-size: 14px;
+  line-height: 1.6;
+  font-weight: 400;
+
+  /* Rendu */
+  color-scheme: dark;
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-primary);
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Box-sizing universel */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Reset body */
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+/* Médias */
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}

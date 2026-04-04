@@ -1,0 +1,54 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   ALERT — Messages de statut (succès, erreur, avertissement, info)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.alert {
+  padding: 0.75rem 1rem;
+  border: 1px solid currentColor;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin-bottom: 0.75rem;
+}
+
+.alert::before {
+  font-weight: 700;
+  margin-right: 0.6rem;
+  font-size: 0.85rem;
+}
+
+.alert--success {
+  color: var(--color-success);
+  background: rgba(0, 255, 0, 0.05);
+}
+
+.alert--success::before {
+  content: '[✓]';
+}
+
+.alert--error {
+  color: var(--color-error);
+  background: var(--color-error-bg);
+}
+
+.alert--error::before {
+  content: '[✗]';
+}
+
+.alert--warning {
+  color: var(--color-warning);
+  background: rgba(255, 255, 0, 0.05);
+}
+
+.alert--warning::before {
+  content: '[!]';
+}
+
+.alert--info {
+  color: var(--color-text-secondary);
+  border-color: var(--color-text-secondary);
+  background: rgba(0, 204, 0, 0.05);
+}
+
+.alert--info::before {
+  content: '[i]';
+}

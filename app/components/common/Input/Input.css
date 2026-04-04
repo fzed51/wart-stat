@@ -1,0 +1,52 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   INPUT — Champ de saisie avec label et gestion des erreurs
+   Les styles de base de `input` proviennent de base.css.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.input-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+
+.input-field__wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-field__prefix {
+  position: absolute;
+  left: 0.75rem;
+  color: var(--color-green-dim);
+  pointer-events: none;
+  font-size: 0.9rem;
+  z-index: 1;
+}
+
+.input--has-prefix {
+  padding-left: 2rem !important;
+}
+
+.input-field__error {
+  font-size: 0.8rem;
+  color: var(--color-error);
+  letter-spacing: 0.02em;
+}
+
+.input-field__error::before {
+  content: '// ';
+  color: var(--color-error);
+  opacity: 0.7;
+}
+
+.input-field--error input {
+  border-color: var(--color-error);
+  box-shadow: 0 0 8px rgba(255, 51, 51, 0.2);
+}
+
+.input-field--error input:focus {
+  border-color: var(--color-error);
+  box-shadow: 0 0 12px rgba(255, 51, 51, 0.4);
+}

@@ -1,0 +1,37 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   SEPARATOR — Séparateur de section
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.separator {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 1.5rem 0;
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.separator::before,
+.separator::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--color-border);
+}
+
+/* Sans label : ligne pleine */
+.separator:not(.separator--labeled)::after {
+  display: none;
+}
+
+.separator__label::before {
+  content: '[ ';
+  color: var(--color-text-dim);
+}
+
+.separator__label::after {
+  content: ' ]';
+  color: var(--color-text-dim);
+}
