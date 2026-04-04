@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getCountryLabel } from '../constants/countries';
+import { PageHeader, Alert, Button, Badge, Card, Separator } from '../components/common';
 
 interface Action {
   id: number;
@@ -135,7 +136,7 @@ export default function ReportDetail() {
   if (loading) {
     return (
       <div className="page">
-        <div className="loading">Chargement du rapport...</div>
+        <Alert variant="info">Chargement du rapport...</Alert>
       </div>
     );
   }
@@ -143,10 +144,10 @@ export default function ReportDetail() {
   if (error || !data) {
     return (
       <div className="page">
-        <div className="error-message">{error || 'Rapport non trouvé'}</div>
-        <button onClick={() => navigate('/reports')} className="primary">
+        <Alert variant="error">{error || 'Rapport non trouvé'}</Alert>
+        <Button onClick={() => navigate('/reports')} style={{ marginTop: '1rem' }}>
           Retour à la liste
-        </button>
+        </Button>
       </div>
     );
   }

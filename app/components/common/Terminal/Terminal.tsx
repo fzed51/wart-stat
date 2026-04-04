@@ -4,6 +4,7 @@ interface TerminalProps {
   title?: string;
   children: React.ReactNode;
   className?: string;
+  style?: React.CSSProperties;
 }
 
 interface TerminalLineProps {
@@ -11,11 +12,12 @@ interface TerminalLineProps {
   children: React.ReactNode;
 }
 
-export function Terminal({ title = 'TERMINAL', children, className }: TerminalProps) {
+export function Terminal({ title = 'TERMINAL', children, className, style }: TerminalProps) {
   return (
     <div
       className={`terminal${className ? ` ${className}` : ''}`}
       data-title={title}
+      style={style}
     >
       {children}
     </div>

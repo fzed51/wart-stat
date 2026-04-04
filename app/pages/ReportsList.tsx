@@ -2,6 +2,7 @@ import { useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useReportStore } from '../stores/reportStore';
 import { getCountryLabel } from '../constants/countries';
+import { PageHeader, Alert, EmptyState, Button, Table, TableHead, TableBody, TableRow, TableCell } from '../components/common';
 
 const formatDate = (isoString: string): string => {
   const date = new Date(isoString);
@@ -42,75 +43,71 @@ export default function ReportsList() {
     return <img {...{className, src, alt, style}} />;
   }, []);
 
-  if (isLoading) {
-    return (
-      <div className="page">
-        <div className="loading">Chargement des rapports</div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="page">
-        <div className="error-message">{error}</div>
-      </div>
-    );
-  }
-
   return (
     <div className="page">
-      <div className="page-header">
-        <h1>Liste des Rapports</h1>
-        <p>{reports.length} rapport{reports.length !== 1 ? 's' : ''} enregistré{reports.length !== 1 ? 's' : ''}</p>
-      </div>
+      <PageHeader
+        title="Liste des Rapports"
+        subtitle={`${reports.length} rapport${reports.length !== 1 ? 's' : ''} enregistré${reports.length !== 1 ? 's' : ''}`}
+      />
 
-      {reports.length === 0 ? (
-        <div className="empty-state">
-          <p>Aucun rapport enregistré.</p>
-          <button onClick={() => navigate('/reports/add')}>
-            Créer un rapport
-          </button>
-        </div>
+      {isLoading && (
+        <Alert variant="info">Chargement des rapports...</Alert>
+      )}
+
+      {error && (
+        <Alert variant="error">{error}</Alert>
+      )}
+
+      {!isLoading && reports.length === 0 ? (
+        <EmptyState
+          icon="∅"
+          title="Aucun rapport"
+          description="Aucun rapport enregistré pour l'instant."
+          action={
+            <Button variant="primary" onClick={() => navigate('/reports/add')}>
+              Créer un rapport
+            </Button>
+          }
+        />
       ) : (
-        <div className="table-container">
-          <table className="reports-table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Pays</th>
-                <th>Date</th>
-                <th>Heure</th>
-                <th>W/L</th>
-                <th>Mission</th>
-                <th>Carte</th>
-                <th>Temps (s)</th>
-                <th>Points</th>
-                <th>SL</th>
-                <th>RP</th>
-              </tr>
-            </thead>
-            <tbody>
-              {reports.map((report) => (
-                <tr key={report.report_id} onClick={() => navigate(`/reports/${report.report_id}`)} className="clickable-row">
-                  <td className="table-id"><span title={
-                    report.session_id || "-"
-                  } className="id-link">{report.report_id}</span></td>
-                  <td className="table-country">{getCountryLabel(report.country)}</td>
-                  <td className="table-date">{formatDate(report.datetime)}</td>
-                  <td className="table-time">{formatTime(report.datetime)}</td>
-                  <td className="table-result">{WonLostRender(report.win_lost)}</td>
-                  <td className="table-mission">{report.mission_type}</td>
-                  <td className="table-carte">{report.carte}</td>
-                  <td className="table-duration">{report.temps_jeux}</td>
-                  <td className="table-points">{report.points_totaux.toLocaleString('fr-FR')}</td>
-                  <td className="table-sl">{report.total_sl.toLocaleString('fr-FR')}</td>
-                  <td className="table-rp">{report.total_rp.toLocaleString('fr-FR')}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <Table isLoading={isLoading}>
+          <TableHead>
+            <TableRow>
+              <TableCell isHeader align="center">ID</TableCell>
+              <TableCell isHeader>Pays</TableCell>
+              <TableCell isHeader>Date</TableCell>
+              <TableCell isHeader>Heure</TableCell>
+              <TableCell isHeader align="center">W/L</TableCell>
+              <TableCell isHeader>Mission</TableCell>
+              <TableCell isHeader>Carte</TableCell>
+              <TableCell isHeader align="right">Temps</TableCell>
+              <TableCell isHeader align="right">Points</TableCell>
+              <TableCell isHeader align="right">SL</TableCell>
+              <TableCell isHeader align="right">RP</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {reports.map((report) => (
+              <TableRow
+                key={report.report_id}
+                onClick={() => navigate(`/reports/${report.report_id}`)}
+                style={{ cursor: 'pointer' }}
+              >
+                <TableCell align="center">{report.report_id}</TableCell>
+                <TableCell>{getCountryLabel(report.country)}</TableCell>
+                <TableCell>{formatDate(report.datetime)}</TableCell>
+                <TableCell>{formatTime(report.datetime)}</TableCell>
+                <TableCell align="center">{WonLostRender(report.win_lost)}</TableCell>
+                <TableCell>{report.mission_type}</TableCell>
+                <TableCell>{report.carte}</TableCell>
+                <TableCell align="right">{report.temps_jeux}s</TableCell>
+                <TableCell align="right">{report.points_totaux.toLocaleString('fr-FR')}</TableCell>
+                <TableCell align="right">{report.total_sl.toLocaleString('fr-FR')}</TableCell>
+                <TableCell align="right">{report.total_rp.toLocaleString('fr-FR')}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       )}
     </div>
   );

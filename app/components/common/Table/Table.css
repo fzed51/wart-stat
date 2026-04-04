@@ -1,0 +1,78 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   TABLE — Tableau de données
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.table-container {
+  overflow-x: auto;
+  border: 1px solid var(--color-border);
+  margin-bottom: 1.5rem;
+}
+
+.table-container table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.table-container thead {
+  background: var(--color-bg-card);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.table-container th {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border-right: 1px solid var(--color-border);
+}
+
+.table-container th::before {
+  content: none;
+}
+
+.table-container th:last-child {
+  border-right: none;
+}
+
+.table-container tbody tr {
+  border-bottom: 1px solid var(--color-border);
+  transition: background 0.2s ease;
+}
+
+.table-container tbody tr:hover {
+  background: rgba(0, 255, 0, 0.03);
+}
+
+.table-container td {
+  padding: 0.75rem 1rem;
+  color: var(--color-text-secondary);
+  border-right: 1px solid var(--color-border);
+}
+
+.table-container td:last-child {
+  border-right: none;
+}
+
+.table-container tbody tr:last-child {
+  border-bottom: none;
+}
+
+/* Cellule alignée au centre */
+.table-container td.center {
+  text-align: center;
+}
+
+/* Cellule alignée à droite */
+.table-container td.right {
+  text-align: right;
+}
+
+/* État chargement */
+.table-container.loading tbody tr {
+  opacity: 0.5;
+  pointer-events: none;
+}

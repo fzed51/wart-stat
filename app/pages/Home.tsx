@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { version } from "../../package.json"
 import { useReportStore } from '../stores/reportStore';
 import { getCountryLabel } from '../constants/countries';
+import { Button, Card, Badge, Terminal, TerminalLine, Separator } from '../components/common';
 
 const formatDate = (isoString: string): string => {
   const date = new Date(isoString);
@@ -33,68 +34,71 @@ export default function Home() {
   const recentReports = reports.slice(0, 3);
 
   return (
-    <div className="home-page">
-      <h1>Wart-Stat</h1>
-      <p className="home-subtitle">Système de rapports de guerre</p>
+    <div className="page">
+      <h1 style={{ textAlign: 'center', marginBottom: '0.5rem' }}>Wart-Stat</h1>
+      <p style={{ textAlign: 'center', color: 'var(--color-text-muted)', marginBottom: '2rem' }}>
+        Système de rapports de guerre
+      </p>
       
-      <div className="home-terminal">
-        <div className="terminal-line">Status: ONLINE</div>
-        <div className="terminal-line">Version: {version}</div>
-        <div className="terminal-line">Dernière mise à jour: 22/12/2025</div>
-        <div className="terminal-line terminal-prompt">_</div>
-      </div>
+      <Terminal title="SYSTEM STATUS" style={{ maxWidth: '600px', margin: '0 auto 2rem' }}>
+        <TerminalLine>Status: ONLINE</TerminalLine>
+        <TerminalLine>Version: {version}</TerminalLine>
+        <TerminalLine>Dernière mise à jour: 22/12/2025</TerminalLine>
+        <TerminalLine prompt>_</TerminalLine>
+      </Terminal>
       
-      <div className="home-actions">
+      <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
         <Link to="/reports/add">
-          <button className="primary">Ajouter un rapport</button>
+          <Button variant="primary">Ajouter un rapport</Button>
         </Link>
       </div>
 
       {recentReports.length > 0 && (
-        <div className="recent-reports">
-          <h2>Derniers rapports</h2>
-          <div className="recent-reports-list">
+        <>
+          <Separator label="Derniers rapports" />
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem', marginBottom: '2rem' }}>
             {recentReports.map((report) => (
-              <div
+              <Card
                 key={report.report_id}
-                className="recent-report-card"
+                title={`Rapport #${report.report_id}`}
                 onClick={() => navigate(`/reports/${report.report_id}`)}
               >
-                <div className="report-card-header">
-                  <span className="report-id">#{report.report_id}</span>
-                  <span className={`report-result ${report.win_lost?.toLowerCase() === 'victoire' ? 'win' : 'lost'}`}>
+                <div style={{ marginBottom: '1rem' }}>
+                  <Badge variant={report.win_lost?.toLowerCase() === 'victoire' ? 'success' : 'error'}>
                     {report.win_lost?.toLowerCase() === 'victoire' ? '✓ Victoire' : '✗ Défaite'}
-                  </span>
+                  </Badge>
                 </div>
-                <div className="report-card-body">
-                  <div className="card-row">
-                    <span className="card-label">Pays:</span>
-                    <span className="card-value">{getCountryLabel(report.country)}</span>
+                <div style={{ fontSize: '0.9rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span style={{ color: 'var(--color-text-muted)' }}>Pays:</span>
+                    <span>{getCountryLabel(report.country)}</span>
                   </div>
-                  <div className="card-row">
-                    <span className="card-label">Mission:</span>
-                    <span className="card-value">{report.mission_type}</span>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span style={{ color: 'var(--color-text-muted)' }}>Mission:</span>
+                    <span>{report.mission_type}</span>
                   </div>
-                  <div className="card-row">
-                    <span className="card-label">Carte:</span>
-                    <span className="card-value">{report.carte}</span>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span style={{ color: 'var(--color-text-muted)' }}>Carte:</span>
+                    <span>{report.carte}</span>
                   </div>
-                  <div className="card-row">
-                    <span className="card-label">Points:</span>
-                    <span className="card-value">{report.points_totaux.toLocaleString('fr-FR')}</span>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span style={{ color: 'var(--color-text-muted)' }}>Points:</span>
+                    <span>{report.points_totaux.toLocaleString('fr-FR')}</span>
                   </div>
                 </div>
-                <div className="report-card-footer">
-                  <span className="report-date">{formatDate(report.datetime)}</span>
-                  <span className="report-time">{formatTime(report.datetime)}</span>
+                <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid var(--color-border)', fontSize: '0.8rem', display: 'flex', justifyContent: 'space-between', color: 'var(--color-text-muted)' }}>
+                  <span>{formatDate(report.datetime)}</span>
+                  <span>{formatTime(report.datetime)}</span>
                 </div>
-              </div>
+              </Card>
             ))}
           </div>
-          <div className="view-all-link">
-            <Link to="/reports">Voir tous les rapports →</Link>
+          <div style={{ textAlign: 'center' }}>
+            <Link to="/reports">
+              <Button variant="ghost">Voir tous les rapports →</Button>
+            </Link>
           </div>
-        </div>
+        </>
       )}
     </div>
   );

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useReportStore, type ReportFormData } from '../stores/reportStore';
 import { usePreferencesStore } from '../stores/preferencesStore';
 import { CountrySelect } from './ContrySelect';
+import { Alert, Button, ButtonGroup, Input, Textarea, PageHeader } from './common';
 
 const getDefaultDate = (): string => {
   return new Date().toISOString().split('T')[0];
@@ -40,74 +41,57 @@ export default function ReportForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="report-form">
-      <h1>Nouveau Rapport</h1>
+    <div className="page">
+      <PageHeader title="Nouveau Rapport" subtitle="Ajoutez un nouveau rapport de mission" />
 
-      {(error || validationError) && (
-        <div className="error-message">
-          {validationError || error}
-        </div>
-      )}
+      <form onSubmit={handleSubmit} style={{ maxWidth: '600px' }}>
+        {(error || validationError) && (
+          <Alert variant="error">{validationError || error}</Alert>
+        )}
 
-      <CountrySelect
-        value={formData.country}
-        onChange={(country) => setFormData({ ...formData, country })}
-      />
+        <CountrySelect
+          value={formData.country}
+          onChange={(country) => setFormData({ ...formData, country })}
+        />
 
-      <div className="form-group">
-        <label htmlFor="date">Date</label>
-        <input
+        <Input
           type="date"
+          label="Date"
           id="date"
           value={formData.date}
           onChange={(e) => setFormData({ ...formData, date: e.target.value })}
           required
         />
-      </div>
 
-      <div className="form-group">
-        <label htmlFor="time">Heure</label>
-        <input
+        <Input
           type="time"
+          label="Heure"
           id="time"
           value={formData.time}
           onChange={(e) => setFormData({ ...formData, time: e.target.value })}
           required
         />
-      </div>
 
-      <div className="form-group">
-        <label htmlFor="content">
-          Contenu du rapport
-        </label>
-        <textarea
+        <Textarea
+          label="Contenu du rapport"
           id="content"
           value={formData.content}
           onChange={(e) => setFormData({ ...formData, content: e.target.value })}
           required
           rows={15}
           placeholder="Saisissez le contenu de votre rapport ici..."
+          showCounter
         />
-        <div className="char-counter valid">
-          {formData.content.length} caractères
-        </div>
-      </div>
 
-      <div className="button-group">
-        <button
-          type="button"
-          onClick={() => navigate('/')}
-        >
-          Annuler
-        </button>
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="primary"
-        >
-          {isLoading ? 'Enregistrement...' : 'Enregistrer'}
-        </button>
-      </div>
-    </form>
+        <ButtonGroup>
+          <Button variant="ghost" type="button" onClick={() => navigate('/')}>
+            Annuler
+          </Button>
+          <Button variant="primary" type="submit" disabled={isLoading}>
+            {isLoading ? 'Enregistrement...' : 'Enregistrer'}
+          </Button>
+        </ButtonGroup>
+      </form>
+    </div>
   );
 }
