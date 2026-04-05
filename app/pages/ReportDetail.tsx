@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getCountryLabel } from '../constants/countries';
+import { FormattedTime } from '../components/FormattedTime';
 import { Alert, Button } from '../components/common';
 
 interface Action {
@@ -59,16 +60,7 @@ interface ReportData {
   bonuses: Bonus[];
 }
 
-const formatTime = (seconds: number): string => {
-  const hours = Math.floor(seconds / 3600);
-  const minutes = Math.floor((seconds % 3600) / 60);
-  const secs = seconds % 60;
 
-  if (hours > 0) {
-    return `${hours}:${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-  }
-  return `${minutes}:${String(secs).padStart(2, '0')}`;
-};
 
 function ActionGroup({ type, actions }: { type: string; actions: Action[] }) {
   if (actions.length === 0) return null;
@@ -89,7 +81,7 @@ function ActionGroup({ type, actions }: { type: string; actions: Action[] }) {
       <div className="action-items">
         {actions.map((action) => (
           <div key={action.id} className="action-item">
-            <div className="action-time">{formatTime(action.timestamp_sec)}</div>
+            <div className="action-time"><FormattedTime seconds={action.timestamp_sec} /></div>
             <div className="action-vehicle">{action.vehicle_name}</div>
             <div className="action-weapon">{action.weapon_used || '-'}</div>
             <div className="action-target">{action.target_name || '-'}</div>
@@ -214,7 +206,7 @@ export default function ReportDetail() {
           <div className="mission-stats">
             <div className="stat">
               <span className="stat-label">Durée:</span>
-              <span className="stat-value">{formatTime(mission.mission_duration_sec)}</span>
+              <span className="stat-value"><FormattedTime seconds={mission.mission_duration_sec} /></span>
             </div>
             <div className="stat">
               <span className="stat-label">Activité:</span>
@@ -238,7 +230,7 @@ export default function ReportDetail() {
             <div className="bonus-items">
               {bonuses.map((bonus) => (
                 <div key={bonus.id} className="bonus-item">
-                  <div className="bonus-time">{formatTime(bonus.timestamp_sec)}</div>
+                  <div className="bonus-time"><FormattedTime seconds={bonus.timestamp_sec} /></div>
                   <div className="bonus-name">{bonus.bonus_name}</div>
                   <div className="bonus-rewards">
                     {bonus.sl_awarded.toLocaleString('fr-FR')} SL • {bonus.rp_awarded.toLocaleString('fr-FR')} RP
