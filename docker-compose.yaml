@@ -8,8 +8,7 @@ services:
     volumes:
       - ./app:/app/app:rw
       - ./public:/app/public:rw
-      - wart-stat-dist:/app/dist:rw
-      - /app/node_modules
+      - dist:/app/dist:rw
     networks:
       - wart-stat-network
     restart: unless-stopped
@@ -32,7 +31,7 @@ services:
       - ./data:/app/data:rw
       - ./data:/app/logs:rw
       - ./report:/app/report:rw
-      - wart-stat-dist:/app/dist:rw
+      - dist:/app/dist:rw
     labels:
       - "com.example.description=Wart-Stat Backend API"
     depends_on:
@@ -43,5 +42,5 @@ networks:
     driver: bridge
 
 volumes:
-  wart-stat-dist:
+  dist:
     driver: local
