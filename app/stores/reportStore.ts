@@ -33,12 +33,18 @@ export interface ReportFormData {
   content: string;
 }
 
+export interface ReportUpdateData {
+  country?: Country;
+  datetime?: string;
+}
+
 interface ReportState {
   reports: ReportDetail[];
   isLoading: boolean;
   error: string | null;
   fetchReports: () => Promise<void>;
   addReport: (formData: ReportFormData) => Promise<void>;
+  updateReport: (reportId: number, data: ReportUpdateData) => Promise<void>;
 }
 
 const combineDateTime = (date: string, time: string): string => {
@@ -95,6 +101,35 @@ export const useReportStore = create<ReportState>((set) => ({
       const savedReport = await response.json();
       set((state) => ({
         reports: [...state.reports, savedReport],
+        isLoading: false,
+      }));
+    } catch (error) {
+      set({
+        error: error instanceof Error ? error.message : 'Une erreur est survenue',
+        isLoading: false,
+      });
+      throw error;
+    }
+  },
+
+  updateReport: async (reportId: number, data: ReportUpdateData) => {
+    set({ isLoading: true, error: null });
+
+    try {
+      const response = await fetch(`/api/reports/${reportId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        throw new Error('Erreur lors de la mise à jour du rapport');
+      }
+
+      const updatedReport = await response.json();
+      set((state) => ({
         isLoading: false,
       }));
     } catch (error) {

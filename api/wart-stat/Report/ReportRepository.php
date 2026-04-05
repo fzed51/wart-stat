@@ -122,4 +122,30 @@ class ReportRepository
         $stmt->execute(['session_id' => $sessionId]);
         return $stmt->fetch() !== false;
     }
+
+    public function update(int $id, array $data): ?array
+    {
+        // Only allow updating country and datetime
+        $allowedFields = ['country', 'datetime'];
+        $updateFields = [];
+        $params = ['id' => $id];
+
+        foreach ($allowedFields as $field) {
+            if (isset($data[$field])) {
+                $updateFields[] = "$field = :$field";
+                $params[$field] = $data[$field];
+            }
+        }
+
+        if (empty($updateFields)) {
+            return $this->findById($id);
+        }
+
+        $sql = 'UPDATE reports SET ' . implode(', ', $updateFields) . ' WHERE id = :id';
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($params);
+
+        $this->logger->debug("Report updated with ID: $id");
+        return $this->findById($id);
+    }
 }

@@ -19,7 +19,7 @@ return function (App $app) {
         $group->get('', [ReportController::class, 'listDetails']);
         $group->get('/{id}', [ReportController::class, 'getById']);
         $group->post('', [ReportController::class, 'create']);
-        //$group->patch('/{id}', [ReportController::class, 'update']);
+        $group->patch('/{id}', [ReportController::class, 'update']);
         //$group->delete('/{id}', [ReportController::class, 'delete']);
     });
 };

@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { getCountryLabel } from '../constants/countries';
+import { getCountryLabel, type Country } from '../constants/countries';
 import { FormattedTime } from '../components/FormattedTime';
 import { Alert, Button } from '../components/common';
+import { CountrySelect } from '../components/ContrySelect';
+import { useReportStore, type ReportUpdateData } from '../stores/reportStore';
 
 interface Action {
   id: number;
@@ -100,10 +102,17 @@ export default function ReportDetail() {
   const navigate = useNavigate();
   const params = useParams<{ id: string }>();
   const reportId = parseInt(params.id || '0', 10);
+  const { updateReport, isLoading: isUpdating, error: updateError } = useReportStore();
 
   const [data, setData] = useState<ReportData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editData, setEditData] = useState<{ country: Country; date: string; time: string }>({
+    country: 'FR',
+    date: '',
+    time: '',
+  });
 
   useEffect(() => {
     const fetchReport = async () => {
@@ -115,6 +124,14 @@ export default function ReportDetail() {
         }
         const result = await response.json();
         setData(result);
+        
+        // Initialize edit data
+        const reportDate = new Date(result.report.datetime);
+        setEditData({
+          country: result.report.country,
+          date: reportDate.toISOString().split('T')[0],
+          time: reportDate.toTimeString().slice(0, 5),
+        });
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Erreur lors du chargement');
       } finally {
@@ -124,6 +141,29 @@ export default function ReportDetail() {
 
     fetchReport();
   }, [reportId]);
+
+  const handleSaveEdit = async () => {
+    try {
+      const updatePayload: ReportUpdateData = {
+        country: editData.country,
+        datetime: new Date(`${editData.date}T${editData.time}`).toISOString(),
+      };
+      
+      await updateReport(reportId, updatePayload);
+      
+      // Update local data
+      if (data) {
+        const updatedReport = { ...data.report };
+        updatedReport.country = editData.country;
+        updatedReport.datetime = updatePayload.datetime || '';
+        setData({ ...data, report: updatedReport });
+      }
+      
+      setIsEditing(false);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erreur lors de la mise à jour');
+    }
+  };
 
   if (loading) {
     return (
@@ -174,6 +214,13 @@ export default function ReportDetail() {
         <div className="report-title">
           <span className={`result-badge ${resultClass}`}>{resultIcon}</span>
           <h1>Rapport #{report.id}</h1>
+          <button 
+            onClick={() => setIsEditing(!isEditing)}
+            className="edit-button"
+            title="Éditer le rapport"
+          >
+            {isEditing ? '✕' : '✎'}
+          </button>
         </div>
         <div className="report-meta">
           <div className="meta-item">
@@ -196,6 +243,62 @@ export default function ReportDetail() {
           </div>
         </div>
       </div>
+
+      {isEditing && (
+        <div className="report-edit-form">
+          {(error || updateError) && (
+            <Alert variant="error">{error || updateError}</Alert>
+          )}
+          <div className="edit-form-content">
+            <div className="form-group">
+              <label htmlFor="edit-country">Pays</label>
+              <CountrySelect
+                value={editData.country}
+                onChange={(country) => setEditData({ ...editData, country })}
+              />
+            </div>
+            
+            <div className="form-group">
+              <label htmlFor="edit-date">Date</label>
+              <input
+                id="edit-date"
+                type="date"
+                value={editData.date}
+                onChange={(e) => setEditData({ ...editData, date: e.target.value })}
+                className="input-field"
+              />
+            </div>
+            
+            <div className="form-group">
+              <label htmlFor="edit-time">Heure</label>
+              <input
+                id="edit-time"
+                type="time"
+                value={editData.time}
+                onChange={(e) => setEditData({ ...editData, time: e.target.value })}
+                className="input-field"
+              />
+            </div>
+            
+            <div className="form-actions">
+              <Button 
+                onClick={() => setIsEditing(false)}
+                variant="ghost"
+                disabled={isUpdating}
+              >
+                Annuler
+              </Button>
+              <Button 
+                onClick={handleSaveEdit}
+                variant="primary"
+                disabled={isUpdating}
+              >
+                {isUpdating ? 'Sauvegarde...' : 'Sauvegarder'}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="report-body">
         {/* Mission Header */}

@@ -136,4 +136,36 @@ class ReportController extends Controller
             'bonuses' => $bonuses,
         ]);
     }
+
+    public function update(Request $request, Response $response): Response
+    {
+        $this->logger->info('~update~');
+
+        $reportId = (int)$request->getAttribute('id');
+        $data = $this->parseRequestBody($request);
+
+        // Check report exists
+        $report = $this->repository->findById($reportId);
+        if (!$report) {
+            return $this->makeJsonResponse($response, 404, ['error' => 'Report not found']);
+        }
+
+        // Validate data (only country and datetime can be updated)
+        $allowedFields = [];
+        if (isset($data['country'])) {
+            $allowedFields['country'] = $data['country'];
+        }
+        if (isset($data['datetime'])) {
+            $allowedFields['datetime'] = $data['datetime'];
+        }
+
+        if (empty($allowedFields)) {
+            return $this->makeJsonResponse($response, 400, ['error' => 'No valid fields to update']);
+        }
+
+        // Update the report
+        $updatedReport = $this->repository->update($reportId, $allowedFields);
+
+        return $this->makeJsonResponse($response, 200, $updatedReport);
+    }
 }
