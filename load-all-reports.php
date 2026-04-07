@@ -22,29 +22,29 @@ try {
     $handler = new StreamHandler(__DIR__ . '/data/batch-load.log', Level::Error);
     $handler->setFormatter(new \Monolog\Formatter\JsonFormatter());
     $logger->pushHandler($handler);
-    
+
     // Console output for progress
     $consoleHandler = new StreamHandler('php://stdout', Level::Info);
     $consoleHandler->setFormatter(new \Monolog\Formatter\LineFormatter("[%level_name%] %message%\n"));
     $logger->pushHandler($consoleHandler);
-    
+
     // Setup PDO
     $dbPath = __DIR__ . '/data/database.sqlite';
     $dataDir = dirname($dbPath);
     if (!is_dir($dataDir)) {
         mkdir($dataDir, 0755, true);
     }
-    
+
     $pdo = new \PDO('sqlite:' . $dbPath);
     $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
     $pdo->setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_ASSOC);
-    
+
     // Enable performance optimizations for batch inserts
     $pdo->exec('PRAGMA synchronous = OFF');
     $pdo->exec('PRAGMA journal_mode = WAL');
-    
+
     echo "✅ Database initialized with performance optimizations\n";
-    
+
     // Create repositories
     $reportRepository = new ReportRepository($pdo, $logger);
     $missionRepository = new MissionRepository($pdo, $logger);
@@ -52,42 +52,43 @@ try {
     $bonusRepository = new MissionBonusRepository($pdo, $logger);
     $validator = new ReportValidator();
     $parser = new ReportParser();
-    
 
-    
+
+
     // Scan report directory
     $reportDir = __DIR__ . '/report';
     $files = glob($reportDir . '/report*.txt');
-    
+
     if (empty($files)) {
         throw new RuntimeException('No report files found in ' . $reportDir);
     }
-    
+
     // Sort files numerically
-    usort($files, function($a, $b) {
+    usort($files, function ($a, $b) {
         preg_match('/report(\d+)\.txt$/', $a, $ma);
         preg_match('/report(\d+)\.txt$/', $b, $mb);
         return (int)$ma[1] <=> (int)$mb[1];
     });
-    
+
     echo "\n════════════════════════════════════════════════════════════════\n";
     echo "📊 BATCH LOADING REPORTS\n";
     echo "════════════════════════════════════════════════════════════════\n\n";
     printf("Found %d report files to process\n\n", count($files));
-    
+
     /**
      * Display progress bar with percentage and statistics
      */
-    $displayProgress = function($current, $total, $stats, $elapsed) {
+    $displayProgress = function ($current, $total, $stats, $elapsed) {
         $percentage = ($current / $total) * 100;
         $barLength = 32;
         $filledLength = (int)($barLength * $current / $total);
         $bar = str_repeat('█', $filledLength) . str_repeat('░', $barLength - $filledLength);
-        
+
         $rate = $elapsed > 0 ? $current / $elapsed : 0;
         $remaining = $rate > 0 ? ($total - $current) / $rate : 0;
-        
-        printf("\r[%s] %3d%% (%d/%d) | %d new, %d skip | ETA: %s",
+
+        printf(
+            "\r[%s] %3d%% (%d/%d) | %d new, %d skip | ETA: %s",
             $bar,
             (int)$percentage,
             $current,
@@ -97,7 +98,7 @@ try {
             gmdate('H:i:s', (int)$remaining)
         );
     };
-    
+
     // Statistics
     $stats = [
         'total_files' => count($files),
@@ -108,50 +109,56 @@ try {
         'errors' => 0,
         'skipped' => 0,
     ];
-    
+
     $errors = [];
     $batchStart = time();
-    
+
     // Process each report file
     foreach ($files as $index => $filePath) {
         $fileNumber = $index + 1;
         $fileInfo = pathinfo($filePath);
         $fileName = $fileInfo['basename'];
-        
+
+        // Progress output every 10 files
+        if ($fileNumber % 10 === 0) {
+            $elapsed = time() - $batchStart;
+            $displayProgress($fileNumber, count($files), $stats, $elapsed);
+        }
+
         try {
             // Extract report number from filename
             preg_match('/report(\d+)\.txt$/', $filePath, $matches);
             $reportNumber = (int)$matches[1];
-            
+
             // Get file modification time
             $fileTime = filemtime($filePath);
             if ($fileTime === false) {
                 throw new RuntimeException("Cannot get file modification time for $fileName");
             }
-            
+
             $datetime = gmdate('Y-m-d\TH:i:s\Z', $fileTime);
-            
+
             // Read report content
             $content = file_get_contents($filePath);
             if ($content === false) {
                 throw new RuntimeException("Cannot read file $fileName");
             }
-            
+
             // Trim content for consistency
             $content = trim($content);
-            
+
             // Extract session_id from report content (quick extraction without full parse)
             $sessionId = null;
             if (preg_match('/^Session:\s*([a-f0-9]+)\s*$/im', $content, $matches)) {
                 $sessionId = $matches[1];
             }
-            
+
             // Check if report already exists by session_id (most reliable identifier)
             if (!empty($sessionId) && $reportRepository->existsBySessionId($sessionId)) {
                 $stats['skipped']++;
                 continue;
             }
-            
+
             // Validate report data
             $reportData = [
                 'country' => 'FR',
@@ -159,27 +166,27 @@ try {
                 'session_id' => $sessionId,
                 'content' => $content,
             ];
-            
+
             if (!$validator->safeValidate($reportData)) {
                 $errors_list = $validator->getErrors();
                 throw new RuntimeException('Validation failed: ' . json_encode($errors_list));
             }
-            
+
             // Begin transaction
             $pdo->beginTransaction();
-            
+
             try {
                 // Create report
                 $report = $reportRepository->create($reportData);
-                
+
                 // Parse the report content
                 $parsedData = $parser->parse($content);
-                
+
                 // Create mission
                 $missionData = $parsedData['mission'];
                 $missionData['report_id'] = $report['id'];
                 $mission = $missionRepository->create($missionData);
-                
+
                 // Create actions
                 $actionCount = 0;
                 foreach ($parsedData['actions'] as $actionData) {
@@ -187,7 +194,7 @@ try {
                     $actionRepository->create($actionData);
                     $actionCount++;
                 }
-                
+
                 // Create bonuses
                 $bonusCount = 0;
                 foreach ($parsedData['mission_bonuses'] as $bonusData) {
@@ -195,16 +202,15 @@ try {
                     $bonusRepository->create($bonusData);
                     $bonusCount++;
                 }
-                
+
                 // Commit transaction
                 $pdo->commit();
-                
+
                 // Update statistics
                 $stats['reports_created']++;
                 $stats['missions_created']++;
                 $stats['actions_created'] += $actionCount;
                 $stats['bonuses_created'] += $bonusCount;
-                
             } catch (\Exception $e) {
                 // Rollback on error
                 if ($pdo->inTransaction()) {
@@ -212,18 +218,17 @@ try {
                 }
                 throw $e;
             }
-            
+
             // Progress output every 10 files
             if ($fileNumber % 10 === 0) {
                 $elapsed = time() - $batchStart;
                 $displayProgress($fileNumber, count($files), $stats, $elapsed);
             }
-            
         } catch (\Exception $e) {
             $stats['errors']++;
             $errorMsg = "report$reportNumber: " . $e->getMessage();
             $errors[] = $errorMsg;
-            
+
             $logger->error("Error processing report $reportNumber", [
                 'error' => $e->getMessage(),
                 'file' => $e->getFile(),
@@ -231,16 +236,16 @@ try {
             ]);
         }
     }
-    
+
     // Final progress update
     $elapsed = time() - $batchStart;
     $displayProgress(count($files), count($files), $stats, $elapsed);
     echo "\n\n";
-    
+
     // Summary
     $scriptEnd = microtime(true);
     $duration = $scriptEnd - $scriptStart;
-    
+
     echo "\n════════════════════════════════════════════════════════════════\n";
     echo "✅ BATCH LOAD COMPLETE\n";
     echo "════════════════════════════════════════════════════════════════\n\n";
@@ -254,7 +259,7 @@ try {
     printf("  • Errors:            %d\n", $stats['errors']);
     printf("  • Duration:          %.1f minutes\n", $duration / 60);
     printf("  • Rate:              %.2f reports/second\n\n", ($stats['reports_created'] > 0 ? $stats['reports_created'] / $duration : 0));
-    
+
     if (!empty($errors)) {
         echo "⚠️  Errors encountered:\n";
         foreach (array_slice($errors, 0, 20) as $error) {
@@ -265,15 +270,14 @@ try {
         }
         echo "\nCheck " . __DIR__ . "/data/batch-load.log for full details\n";
     }
-    
+
     $logger->info('Batch load completed', [
         'files' => $stats['total_files'],
         'created' => $stats['reports_created'],
         'duration' => $duration,
     ]);
-    
+
     echo "\n════════════════════════════════════════════════════════════════\n";
-    
 } catch (\Exception $e) {
     echo "\n❌ FATAL ERROR: " . $e->getMessage() . "\n";
     echo "Stack trace:\n" . $e->getTraceAsString() . "\n";
