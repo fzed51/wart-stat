@@ -4,7 +4,7 @@ import { getCountryLabel, type Country } from '../constants/countries';
 import { FormattedTime } from '../components/FormattedTime';
 import { Alert, Button } from '../components/common';
 import { CountrySelect } from '../components/ContrySelect';
-import { useReportStore, type ReportUpdateData } from '../stores/reportStore';
+import { useReportStore, type ReportUpdateData, type ReportDetailData } from '../stores/reportStore';
 
 interface Action {
   id: number;
@@ -17,49 +17,6 @@ interface Action {
   point_score: number;
   sl_awarded: number;
   rp_awarded: number;
-}
-
-interface Bonus {
-  id: number;
-  mission_id: number;
-  bonus_name: string;
-  timestamp_sec: number;
-  sl_awarded: number;
-  rp_awarded: number;
-}
-
-interface Mission {
-  id: number;
-  report_id: number;
-  mission_type: string;
-  location: string;
-  result: string;
-  mission_duration_sec: number;
-  session_id: string;
-  total_sl: number;
-  total_crp: number;
-  total_rp: number;
-  activity_pct: number;
-  repair_cost: number;
-  ammo_crew_cost: number;
-  victory_reward: number;
-  participation_reward: number;
-  earned_final: number;
-}
-
-interface Report {
-  id: number;
-  country: string;
-  datetime: string;
-  session_id: string;
-  content: string;
-}
-
-interface ReportData {
-  report: Report;
-  mission: Mission;
-  actions: Action[];
-  bonuses: Bonus[];
 }
 
 
@@ -102,11 +59,17 @@ export default function ReportDetail() {
   const navigate = useNavigate();
   const params = useParams<{ id: string }>();
   const reportId = parseInt(params.id || '0', 10);
-  const { updateReport, isLoading: isUpdating, error: updateError } = useReportStore();
 
-  const [data, setData] = useState<ReportData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    reportDetail: data,
+    isLoading,
+    error,
+    fetchReportDetail,
+    updateReport,
+    isLoading: isUpdating
+  } = useReportStore();
+
+  const [localError, setLocalError] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState<{ country: Country; date: string; time: string }>({
     country: 'FR',
@@ -115,32 +78,22 @@ export default function ReportDetail() {
   });
 
   useEffect(() => {
-    const fetchReport = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch(`/api/reports/${reportId}`);
-        if (!response.ok) {
-          throw new Error('Rapport non trouvé');
-        }
-        const result = await response.json();
-        setData(result);
-        
-        // Initialize edit data
-        const reportDate = new Date(result.report.datetime);
-        setEditData({
-          country: result.report.country,
-          date: reportDate.toISOString().split('T')[0],
-          time: reportDate.toTimeString().slice(0, 5),
-        });
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Erreur lors du chargement');
-      } finally {
-        setLoading(false);
-      }
-    };
+    if (data && data.report.id !== reportId) {
+      fetchReportDetail(reportId)
+    }
+  }, [reportId, data, fetchReportDetail]);
 
-    fetchReport();
-  }, [reportId]);
+  useEffect(() => {
+    if (data) {
+      setEditData({ 
+        country: data.report.country as Country, 
+        date: new Date(data.report.datetime).toISOString().substring(0, 10),
+        time: new Date(data.report.datetime).toISOString().substring(11, 16)
+      });
+    } else {
+      setEditData({ country: 'FR', date: '', time: '' });
+    }
+  }, [data]);
 
   const handleSaveEdit = async () => {
     try {
@@ -148,24 +101,28 @@ export default function ReportDetail() {
         country: editData.country,
         datetime: new Date(`${editData.date}T${editData.time}`).toISOString(),
       };
-      
+
       await updateReport(reportId, updatePayload);
-      
+
       // Update local data
       if (data) {
         const updatedReport = { ...data.report };
-        updatedReport.country = editData.country;
+        updatedReport.country = editData.country as any;
         updatedReport.datetime = updatePayload.datetime || '';
-        setData({ ...data, report: updatedReport });
+        setEditData({
+          country: editData.country,
+          date: editData.date,
+          time: editData.time,
+        });
       }
-      
+
       setIsEditing(false);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erreur lors de la mise à jour');
+      setLocalError(err instanceof Error ? err.message : 'Erreur lors de la mise à jour');
     }
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="page">
         <Alert variant="info">Chargement du rapport...</Alert>
@@ -173,10 +130,10 @@ export default function ReportDetail() {
     );
   }
 
-  if (error || !data) {
+  if (error || !data || data.report.id !== reportId) {
     return (
       <div className="page">
-        <Alert variant="error">{error || 'Rapport non trouvé'}</Alert>
+        <Alert variant="error">{localError || error || 'Rapport non trouvé'}</Alert>
         <Button onClick={() => navigate('/reports')} style={{ marginTop: '1rem' }}>
           Retour à la liste
         </Button>
@@ -214,7 +171,7 @@ export default function ReportDetail() {
         <div className="report-title">
           <span className={`result-badge ${resultClass}`}>{resultIcon}</span>
           <h1>Rapport #{report.id}</h1>
-          <button 
+          <button
             onClick={() => setIsEditing(!isEditing)}
             className="edit-button"
             title="Éditer le rapport"
@@ -246,8 +203,8 @@ export default function ReportDetail() {
 
       {isEditing && (
         <div className="report-edit-form">
-          {(error || updateError) && (
-            <Alert variant="error">{error || updateError}</Alert>
+          {(localError) && (
+            <Alert variant="error">{localError}</Alert>
           )}
           <div className="edit-form-content">
             <div className="form-group">
@@ -257,7 +214,7 @@ export default function ReportDetail() {
                 onChange={(country) => setEditData({ ...editData, country })}
               />
             </div>
-            
+
             <div className="form-group">
               <label htmlFor="edit-date">Date</label>
               <input
@@ -268,7 +225,7 @@ export default function ReportDetail() {
                 className="input-field"
               />
             </div>
-            
+
             <div className="form-group">
               <label htmlFor="edit-time">Heure</label>
               <input
@@ -279,16 +236,16 @@ export default function ReportDetail() {
                 className="input-field"
               />
             </div>
-            
+
             <div className="form-actions">
-              <Button 
+              <Button
                 onClick={() => setIsEditing(false)}
                 variant="ghost"
                 disabled={isUpdating}
               >
                 Annuler
               </Button>
-              <Button 
+              <Button
                 onClick={handleSaveEdit}
                 variant="primary"
                 disabled={isUpdating}

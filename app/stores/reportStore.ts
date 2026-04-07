@@ -38,11 +38,61 @@ export interface ReportUpdateData {
   datetime?: string;
 }
 
+export interface ReportDetailData {
+  report: {
+    id: number;
+    country: string;
+    datetime: string;
+    session_id: string;
+    content: string;
+  };
+  mission: {
+    id: number;
+    report_id: number;
+    mission_type: string;
+    location: string;
+    result: string;
+    mission_duration_sec: number;
+    session_id: string;
+    total_sl: number;
+    total_crp: number;
+    total_rp: number;
+    activity_pct: number;
+    repair_cost: number;
+    ammo_crew_cost: number;
+    victory_reward: number;
+    participation_reward: number;
+    earned_final: number;
+  };
+  actions: Array<{
+    id: number;
+    mission_id: number;
+    type_action: string;
+    timestamp_sec: number;
+    vehicle_name: string;
+    weapon_used: string | null;
+    target_name: string | null;
+    point_score: number;
+    sl_awarded: number;
+    rp_awarded: number;
+  }>;
+  bonuses: Array<{
+    id: number;
+    mission_id: number;
+    bonus_name: string;
+    timestamp_sec: number;
+    sl_awarded: number;
+    rp_awarded: number;
+  }>;
+}
+
 interface ReportState {
   reports: ReportDetail[];
+  reportDetail: ReportDetailData | null;
   isLoading: boolean;
   error: string | null;
   fetchReports: () => Promise<void>;
+  fetchReportDetail: (reportId: number) => Promise<void>;
   addReport: (formData: ReportFormData) => Promise<void>;
   updateReport: (reportId: number, data: ReportUpdateData) => Promise<void>;
 }
@@ -53,8 +103,31 @@ const combineDateTime = (date: string, time: string): string => {
 
 export const useReportStore = create<ReportState>((set) => ({
   reports: [],
+  reportDetail: null,
   isLoading: false,
   error: null,
+
+  fetchReportDetail: async (reportId: number) => {
+    set({ isLoading: true, error: null });
+
+    try {
+      const response = await fetch(`/api/reports/${reportId}`);
+
+      if (!response.ok) {
+        throw new Error('Rapport non trouvé');
+      }
+
+      const data = await response.json();
+      set({ reportDetail: data, isLoading: false });
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Erreur lors du chargement';
+      set({
+        error: errorMessage,
+        isLoading: false,
+      });
+      throw error;
+    }
+  },
 
   fetchReports: async () => {
     set({ isLoading: true, error: null });
