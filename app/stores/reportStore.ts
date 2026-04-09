@@ -118,6 +118,7 @@ export const useReportStore = create<ReportState>((set) => ({
       }
 
       const data = await response.json();
+      console.log(`💤~ data fetched:`, data);
       set({ reportDetail: data, isLoading: false });
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Erreur lors du chargement';
@@ -202,7 +203,10 @@ export const useReportStore = create<ReportState>((set) => ({
       }
 
       const updatedReport = await response.json();
-      set((state) => ({
+      set(state => ({
+        ...state,
+        reports: state.reports.map(report => report.report_id === reportId ? updatedReport : report),
+        reportDetail: updatedReport,
         isLoading: false,
       }));
     } catch (error) {

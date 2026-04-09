@@ -4,7 +4,7 @@ import { getCountryLabel, type Country } from '../constants/countries';
 import { FormattedTime } from '../components/FormattedTime';
 import { Alert, Button } from '../components/common';
 import { CountrySelect } from '../components/ContrySelect';
-import { useReportStore, type ReportUpdateData, type ReportDetailData } from '../stores/reportStore';
+import { useReportStore, type ReportUpdateData } from '../stores/reportStore';
 
 interface Action {
   id: number;
@@ -78,7 +78,7 @@ export default function ReportDetail() {
   });
 
   useEffect(() => {
-    if (data && data.report.id !== reportId) {
+    if (data === null || data.report.id !== reportId) {
       fetchReportDetail(reportId)
     }
   }, [reportId, data, fetchReportDetail]);
@@ -208,7 +208,6 @@ export default function ReportDetail() {
           )}
           <div className="edit-form-content">
             <div className="form-group">
-              <label htmlFor="edit-country">Pays</label>
               <CountrySelect
                 value={editData.country}
                 onChange={(country) => setEditData({ ...editData, country })}
