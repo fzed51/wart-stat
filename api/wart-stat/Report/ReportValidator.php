@@ -6,7 +6,7 @@ use Monolog\Logger;
 
 class ReportValidator
 {
-    private array $validCountries =  ['US', 'GER', 'URRS', 'UK', 'JAP', 'CH', 'IT', 'FR', 'SU', 'IL'];
+    private array $validCountries =  ['US', 'GER', 'URRS', 'UK', 'JAP', 'CH', 'IT', 'FR', 'SU', 'IL', '-'];
     
     private array $errors = [];
 

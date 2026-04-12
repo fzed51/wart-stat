@@ -161,7 +161,7 @@ try {
 
             // Validate report data
             $reportData = [
-                'country' => 'FR',
+                'country' => '-',
                 'datetime' => $datetime,
                 'session_id' => $sessionId,
                 'content' => $content,
