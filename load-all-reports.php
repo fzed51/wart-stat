@@ -130,10 +130,10 @@ try {
             preg_match('/report(\d+)\.txt$/', $filePath, $matches);
             $reportNumber = (int)$matches[1];
 
-            // Get file modification time
-            $fileTime = filemtime($filePath);
+            // Get file creation time
+            $fileTime = filectime($filePath);
             if ($fileTime === false) {
-                throw new RuntimeException("Cannot get file modification time for $fileName");
+                throw new RuntimeException("Cannot get file creation time for $fileName");
             }
 
             $datetime = gmdate('Y-m-d\TH:i:s\Z', $fileTime);
