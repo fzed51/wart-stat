@@ -85,10 +85,18 @@ export default function ReportDetail() {
 
   useEffect(() => {
     if (data) {
+      const dateObj = new Date(data.report.datetime);
+      // Extraire la date et heure LOCALES (pas UTC)
+      const year = dateObj.getFullYear();
+      const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+      const day = String(dateObj.getDate()).padStart(2, '0');
+      const date = `${year}-${month}-${day}`;
+      const time = `${dateObj.getHours().toString().padStart(2, '0')}:${dateObj.getMinutes().toString().padStart(2, '0')}`;
+      
       setEditData({ 
         country: data.report.country as Country, 
-        date: new Date(data.report.datetime).toISOString().substring(0, 10),
-        time: new Date(data.report.datetime).toISOString().substring(11, 16)
+        date,
+        time
       });
     } else {
       setEditData({ country: 'FR', date: '', time: '' });
@@ -97,9 +105,26 @@ export default function ReportDetail() {
 
   const handleSaveEdit = async () => {
     try {
+      // editData contient une date/heure locale éditée par l'utilisateur
+      // On doit la convertir en ISO en respectant l'heure locale
+      const [year, month, day] = editData.date.split('-');
+      const [hours, minutes] = editData.time.split(':');
+      
+      // Créer une Date locale avec les valeurs saisies
+      const localDate = new Date(
+        parseInt(year),
+        parseInt(month) - 1,
+        parseInt(day),
+        parseInt(hours),
+        parseInt(minutes)
+      );
+      
+      // Convertir en ISO string (conserve l'heure locale)
+      const isoDateTime = localDate.toISOString();
+
       const updatePayload: ReportUpdateData = {
         country: editData.country,
-        datetime: new Date(`${editData.date}T${editData.time}`).toISOString(),
+        datetime: isoDateTime,
       };
 
       await updateReport(reportId, updatePayload);
@@ -108,7 +133,7 @@ export default function ReportDetail() {
       if (data) {
         const updatedReport = { ...data.report };
         updatedReport.country = editData.country as any;
-        updatedReport.datetime = updatePayload.datetime || '';
+        updatedReport.datetime = isoDateTime;
         setEditData({
           country: editData.country,
           date: editData.date,
