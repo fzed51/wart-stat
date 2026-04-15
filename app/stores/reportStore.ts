@@ -101,7 +101,7 @@ const combineDateTime = (date: string, time: string): string => {
   return new Date(`${date}T${time}`).toISOString();
 };
 
-export const useReportStore = create<ReportState>((set) => ({
+export const useReportStore = create<ReportState>((set, get) => ({
   reports: [],
   reportDetail: null,
   isLoading: false,
@@ -202,13 +202,7 @@ export const useReportStore = create<ReportState>((set) => ({
         throw new Error('Erreur lors de la mise à jour du rapport');
       }
 
-      const updatedReport = await response.json();
-      set(state => ({
-        ...state,
-        reports: state.reports.map(report => report.report_id === reportId ? updatedReport : report),
-        reportDetail: updatedReport,
-        isLoading: false,
-      }));
+      get().fetchReportDetail(reportId);
     } catch (error) {
       set({
         error: error instanceof Error ? error.message : 'Une erreur est survenue',
