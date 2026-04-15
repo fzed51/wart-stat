@@ -4,6 +4,22 @@ declare(strict_types=1);
 require __DIR__ . '/vendor/autoload.php';
 
 // ============================================================
+// Available Countries
+// ============================================================
+const COUNTRIES = [
+    'US' => 'États-Unis',
+    'GER' => 'Allemagne',
+    'URRS' => 'URSS',
+    'UK' => 'Royaume-Uni',
+    'JAP' => 'Japon',
+    'CH' => 'Chine',
+    'IT' => 'Italie',
+    'FR' => 'France',
+    'SU' => 'Suède',
+    'IL' => 'Israël',
+];
+
+// ============================================================
 // Setup PDO
 // ============================================================
 $dbPath = __DIR__ . '/data/database.sqlite';
@@ -70,6 +86,44 @@ function detectCountryFromVehicles(PDO $pdo, array $vehicles): ?string {
 }
 
 // ============================================================
+// Helper: Get user country selection
+// ============================================================
+function getUserCountrySelection(): ?string {
+    echo "\n  📍 Select report country:\n";
+    $index = 1;
+    $countryMap = [];
+    
+    foreach (COUNTRIES as $code => $label) {
+        $countryMap[$index] = $code;
+        printf("    [%d] %s (%s)\n", $index, $label, $code);
+        $index++;
+    }
+    
+    echo "    [s] Skip this report\n";
+    echo "    [a] Auto finish (skip unresolved reports)\n";
+    
+    do {
+        echo "\n  Enter your choice (number, s, or a): ";
+        $input = trim(fgets(STDIN));
+        
+        if (strtolower($input) === 's') {
+            return 'SKIP';
+        }
+        
+        if (strtolower($input) === 'a') {
+            return 'AUTO_MODE';
+        }
+        
+        $num = (int)$input;
+        if (isset($countryMap[$num])) {
+            return $countryMap[$num];
+        }
+        
+        echo "  ⚠️  Invalid choice. Please try again.\n";
+    } while (true);
+}
+
+// ============================================================
 // Main Logic
 // ============================================================
 echo "\n════════════════════════════════════════════════════════════════\n";
@@ -84,8 +138,10 @@ try {
     echo "Found " . count($missingReports) . " reports with missing country\n\n";
     
     $fixed = 0;
-    $ambiguous = 0;
     $noMatch = 0;
+    $skipped = 0;
+    $autoSkipped = 0;
+    $autoMode = false;
     $stats = [];
     
     // Step 2: Process each report
@@ -111,18 +167,44 @@ try {
         // Step 3: Detect country from vehicles
         $detectedCountry = detectCountryFromVehicles($pdo, $vehicles);
         
+        // Step 4: If not automatically detected, ask user
         if ($detectedCountry === null) {
-            echo "  ❌ No countries found with these vehicles\n\n";
-            $noMatch++;
-            $stats['no_match'] = ($stats['no_match'] ?? 0) + 1;
-            continue;
+            if ($autoMode) {
+                // Auto mode: skip unresolved reports
+                echo "  ⏭️  Auto mode: Skipping (no automatic resolution)\n\n";
+                $autoSkipped++;
+                $stats['auto_skipped'] = ($stats['auto_skipped'] ?? 0) + 1;
+                continue;
+            }
+            
+            echo "  ❌ No countries found with these vehicles\n";
+            
+            $userChoice = getUserCountrySelection();
+            
+            if ($userChoice === 'AUTO_MODE') {
+                $autoMode = true;
+                echo "\n  ✓ Auto finish enabled. Remaining unresolved reports will be skipped.\n\n";
+                $autoSkipped++;
+                $stats['auto_skipped'] = ($stats['auto_skipped'] ?? 0) + 1;
+                continue;
+            }
+            
+            if ($userChoice === 'SKIP') {
+                echo "  ⏭️  Report skipped\n\n";
+                $skipped++;
+                $stats['skipped'] = ($stats['skipped'] ?? 0) + 1;
+                continue;
+            }
+            
+            $detectedCountry = $userChoice;
         }
         
-        // Step 4: Update the report
+        // Step 5: Update the report
         $updateStmt = $pdo->prepare('UPDATE reports SET country = ? WHERE id = ?');
         $updateStmt->execute([$detectedCountry, $reportId]);
         
-        echo "  ✅ Detected country: $detectedCountry\n";
+        $countryLabel = COUNTRIES[$detectedCountry] ?? $detectedCountry;
+        echo "  ✅ Country assigned: $countryLabel ($detectedCountry)\n";
         echo "  ✔️  Report updated successfully\n\n";
         
         $fixed++;
@@ -137,13 +219,16 @@ try {
     echo "════════════════════════════════════════════════════════════════\n\n";
     printf("Reports processed:    %d\n", count($missingReports));
     printf("Reports fixed:        %d ✅\n", $fixed);
-    printf("Reports no match:     %d ❌\n\n", $noMatch);
+    printf("Reports skipped:      %d ⏭️\n", $skipped);
+    printf("Reports auto-skipped: %d ⏩\n", $autoSkipped);
+    printf("Reports without data: %d ⚠️\n\n", $noMatch);
     
     if (!empty($stats)) {
-        echo "Countries identified:\n";
+        echo "Countries assigned:\n";
         foreach ($stats as $country => $count) {
-            if (!in_array($country, ['no_match', 'no_vehicles'])) {
-                printf("  - %s: %d reports\n", $country, $count);
+            if (!in_array($country, ['skipped', 'no_vehicles', 'auto_skipped'])) {
+                $label = COUNTRIES[$country] ?? $country;
+                printf("  - %s (%s): %d reports\n", $label, $country, $count);
             }
         }
     }
