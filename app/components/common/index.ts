@@ -5,6 +5,7 @@ export { Button } from './Button';
 export { ButtonGroup } from './ButtonGroup';
 export { Card } from './Card';
 export { EmptyState } from './EmptyState';
+export { ErrorBoundary } from './ErrorBoundary';
 export { Input } from './Input';
 export { PageHeader } from './PageHeader';
 export { Select } from './Select';
