@@ -1,6 +1,5 @@
 import React, { type ReactNode } from 'react';
-import { Alert } from '../Alert';
-import { Button } from '../Button';
+import { Alert, Button } from '@fzed51/green-terminal';
 import { Card } from '../Card';
 import './ErrorBoundary.css';
 

@@ -1,3 +1,4 @@
+import { InputText } from '@fzed51/green-terminal';
 import './Input.css';
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -6,7 +7,7 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   prefix?: string;
 }
 
-export function Input({ label, error, prefix, id, className, ...props }: InputProps) {
+export function Input({ label, error, prefix, id, className, size: _size, ...props }: InputProps) {
   const inputId = id ?? label?.toLowerCase().replace(/\s+/g, '-');
 
   return (
@@ -20,8 +21,9 @@ export function Input({ label, error, prefix, id, className, ...props }: InputPr
             {prefix}
           </span>
         )}
-        <input
+        <InputText
           id={inputId}
+          state={error ? 'error' : 'default'}
           className={prefix ? 'input--has-prefix' : undefined}
           {...props}
         />

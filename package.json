@@ -11,6 +11,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@fzed51/green-terminal": "1.0.1",
     "@types/react-router-dom": "^5.3.3",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",

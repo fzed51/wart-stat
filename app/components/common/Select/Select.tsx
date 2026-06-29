@@ -1,3 +1,4 @@
+import { Selector } from '@fzed51/green-terminal';
 import './Select.css';
 
 interface SelectOption {
@@ -33,18 +34,19 @@ export function Select({
       className={`select-field${error ? ' select-field--error' : ''}${className ? ` ${className}` : ''}`}
     >
       {label && <label htmlFor={selectId}>{label}</label>}
-      <select id={selectId} value={value} onChange={(e) => onChange(e.target.value)}>
-        {placeholder && (
-          <option value="" disabled>
-            {placeholder}
-          </option>
-        )}
+      <Selector
+        id={selectId}
+        value={value}
+        state={error ? 'error' : 'default'}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+      >
         {options.map((opt) => (
           <option key={opt.value} value={opt.value}>
             {opt.label}
           </option>
         ))}
-      </select>
+      </Selector>
       {error && (
         <span className="select-field__error" role="alert">
           {error}
