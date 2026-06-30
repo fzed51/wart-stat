@@ -159,7 +159,7 @@ export default function ReportDetail() {
     return (
       <div className="page">
         <Alert variant="error">{localError || error || 'Rapport non trouvé'}</Alert>
-        <Button onClick={() => navigate('/reports')} style={{ marginTop: '1rem' }}>
+        <Button variant="secondary" onClick={() => navigate('/reports')} style={{ marginTop: '1rem' }}>
           Retour à la liste
         </Button>
       </div>

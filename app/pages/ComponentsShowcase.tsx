@@ -143,17 +143,19 @@ export default function ComponentsShowcase() {
               label="Variantes"
               preview={
                 <>
-                  <Button>Défaut</Button>
                   <Button variant="primary">Primaire</Button>
-                  <Button variant="danger">Danger</Button>
+                  <Button variant="secondary">Secondaire</Button>
                   <Button variant="ghost">Ghost</Button>
+                  <Button variant="danger">Danger</Button>
+                  <Button variant="outline">Contour</Button>
                   <Button disabled>Désactivé</Button>
                 </>
               }
-              code={`<Button>Défaut</Button>
-<Button variant="primary">Primaire</Button>
-<Button variant="danger">Danger</Button>
+              code={`<Button variant="primary">Primaire</Button>
+<Button variant="secondary">Secondaire</Button>
 <Button variant="ghost">Ghost</Button>
+<Button variant="danger">Danger</Button>
+<Button variant="outline">Contour</Button>
 <Button disabled>Désactivé</Button>`}
             />
           </Section>
@@ -168,14 +170,14 @@ export default function ComponentsShowcase() {
                   <Badge variant="error">Défaite</Badge>
                   <Badge variant="warning">Attention</Badge>
                   <Badge variant="info">Info</Badge>
-                  <Badge variant="neutral">Neutre</Badge>
+                  <Badge variant="default">Défaut</Badge>
                 </>
               }
               code={`<Badge variant="success">Victoire</Badge>
 <Badge variant="error">Défaite</Badge>
 <Badge variant="warning">Attention</Badge>
 <Badge variant="info">Info</Badge>
-<Badge variant="neutral">Neutre</Badge>`}
+<Badge variant="default">Défaut</Badge>`}
             />
           </Section>
 

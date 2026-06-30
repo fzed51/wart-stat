@@ -1,3 +1,4 @@
+import { InputTextarea } from '@fzed51/green-terminal';
 import './Textarea.css';
 
 interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
@@ -30,8 +31,9 @@ export function Textarea({
     >
       {label && <label htmlFor={textareaId}>{label}</label>}
       <div className="textarea-field__wrapper">
-        <textarea
+        <InputTextarea
           id={textareaId}
+          state={error || isError ? 'error' : 'default'}
           maxLength={maxLength}
           value={value}
           {...props}

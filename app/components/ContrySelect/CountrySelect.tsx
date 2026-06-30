@@ -1,3 +1,4 @@
+import { Selector } from '@fzed51/green-terminal';
 import { COUNTRIES, type Country } from '../../constants/countries';
 import './CountrySelect.css';
 
@@ -20,7 +21,7 @@ export function CountrySelect({ value, onChange }: CountrySelectProps) {
             className="select-flag-icon"
           />
         )}
-        <select
+        <Selector
           id="country"
           className="select-with-flag"
           value={value}
@@ -32,7 +33,7 @@ export function CountrySelect({ value, onChange }: CountrySelectProps) {
               {c.label}
             </option>
           ))}
-        </select>
+        </Selector>
       </div>
     </div>
   );

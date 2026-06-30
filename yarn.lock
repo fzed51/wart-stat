@@ -479,6 +479,38 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@fontsource/ibm-plex-mono@npm:^5.2.7":
+  version: 5.2.7
+  resolution: "@fontsource/ibm-plex-mono@npm:5.2.7"
+  checksum: 10c0/b104ae0f8054def5e6edca395f9c41d9a15b17ceeea522573b1ef223311bfa0d8f0fe3e2d3a56ecea59ff3e3ceee571e16d1ee942093bac97a66c3b8a72eaca3
+  languageName: node
+  linkType: hard
+
+"@fzed51/green-terminal@npm:1.0.1":
+  version: 1.0.1
+  resolution: "@fzed51/green-terminal@npm:1.0.1"
+  dependencies:
+    "@fontsource/ibm-plex-mono": "npm:^5.2.7"
+    "@fzed51/react-component": "npm:^1.2.2"
+  peerDependencies:
+    react: ">=19"
+    react-dom: ">=19"
+  checksum: 10c0/1296a738837c71355445bff46d6da4b749fd05ddcb45128ed1dae3f92d253795ebf22ee87605b2f01556dfb378149c771955e4ac194689614e00b0d1e781e09f
+  languageName: node
+  linkType: hard
+
+"@fzed51/react-component@npm:^1.2.2":
+  version: 1.2.2
+  resolution: "@fzed51/react-component@npm:1.2.2"
+  dependencies:
+    clsx: "npm:^2.1.1"
+  peerDependencies:
+    react: ">=19"
+    react-dom: ">=19"
+  checksum: 10c0/9d6462cb3c58b1ceaacbe2ab164d766e7a66f74fcb7938e0aafcfe8b19e2be327f14dd8e617de1b7e5779d885fbc30eb323723fced39ddd62bc94869bf97397a
+  languageName: node
+  linkType: hard
+
 "@humanfs/core@npm:^0.19.1":
   version: 0.19.1
   resolution: "@humanfs/core@npm:0.19.1"
@@ -1189,6 +1221,13 @@ __metadata:
   version: 3.0.0
   resolution: "chownr@npm:3.0.0"
   checksum: 10c0/43925b87700f7e3893296c8e9c56cc58f926411cce3a6e5898136daaf08f08b9a8eb76d37d3267e707d0dcc17aed2e2ebdf5848c0c3ce95cf910a919935c1b10
+  languageName: node
+  linkType: hard
+
+"clsx@npm:^2.1.1":
+  version: 2.1.1
+  resolution: "clsx@npm:2.1.1"
+  checksum: 10c0/c4c8eb865f8c82baab07e71bfa8897c73454881c4f99d6bc81585aecd7c441746c1399d08363dc096c550cceaf97bd4ce1e8854e1771e9998d9f94c4fe075839
   languageName: node
   linkType: hard
 
@@ -2700,6 +2739,7 @@ __metadata:
   resolution: "wart-stat@workspace:."
   dependencies:
     "@eslint/js": "npm:^9.39.1"
+    "@fzed51/green-terminal": "npm:1.0.1"
     "@types/node": "npm:^24.10.1"
     "@types/react": "npm:^19.2.5"
     "@types/react-dom": "npm:^19.2.3"
