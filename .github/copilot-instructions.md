@@ -27,7 +27,7 @@ Frontend (React + TypeScript + Vite)      Backend (PHP + Slim Framework)
 - **Vite** 7.2.4 avec HMR et React Compiler activé
 - **React Router** v7.11.0 pour le routage
 - **Zustand** v4.5.2 pour la gestion d'état global
-- **@fzed51/green-terminal** — bibliothèque de composants UI du projet (importer depuis ce package, ne pas recréer de composants locaux)
+- **@fzed51/green-terminal** — bibliothèque de composants UI du projet. Importer depuis ce package, ne pas recréer de composants locaux. Composants disponibles : `Alert`, `AppShell`, `Badge`, `Button`, `ButtonGroup`, `EmptyState`, `PageHeader`, `Terminal`, `TerminalLine`. Les composants locaux manquants sont dans `app/components/common/`.
 
 ### Stack Backend
 
@@ -172,4 +172,4 @@ docker-compose up           # Lance frontend + backend
 | [`.github/instructions/app.instructions.md`](.github/instructions/app.instructions.md) | Frontend React/TypeScript, composants, état |
 | [`.github/instructions/styling-theme.instructions.md`](.github/instructions/styling-theme.instructions.md) | Design system, couleurs, effets visuels |
 | [`.github/instructions/repository-pattern.instructions.md`](.github/instructions/repository-pattern.instructions.md) | Pattern Repository, template SQLite/PDO |
-| [`AI_CONTEXT.md`](../AI_CONTEXT.md) | Contexte technique complet, exemples de code |
+| [`AI_CONTEXT.md`](../../AI_CONTEXT.md) | Contexte technique complet, exemples de code |
